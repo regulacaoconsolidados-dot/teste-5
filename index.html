@@ -741,9 +741,9 @@
               </div>
             </div>
             <div class="gauge-zones-row">
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#059669"></span>≥ 80% Ótimo</span>
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#d97706"></span>50–79% Regular</span>
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#b91c1c"></span>&lt; 50% crítico</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#2ebd89"></span>≥ 80% Ótimo</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#FABA5F"></span>50–79% Regular</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#d35454"></span>&lt; 50% crítico</span>
             </div>
           </div>
           <div class="gauge-card">
@@ -775,10 +775,10 @@
               </div>
             </div>
             <div class="gauge-zones-row">
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#059669"></span>≤ 10% Excelente</span>
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#3b82f6"></span>11–20% Bom</span>
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#d97706"></span>21–35% Atenção</span>
-              <span class="gauge-zone-item"><span class="zone-circle" style="background:#b91c1c"></span>&gt; 35% Crítico</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#2ebd89"></span>≤ 10% Excelente</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#5793F7"></span>11–20% Bom</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#FABA5F"></span>21–35% Atenção</span>
+              <span class="gauge-zone-item"><span class="zone-circle" style="background:#d35454"></span>&gt; 35% Crítico</span>
             </div>
           </div>
         </div>
@@ -1555,7 +1555,7 @@
         const mesRaw=normStr(r["MÊS/2025"]||r["MES/2025"]||r["MÊS"]||r["MES"]);
         const mes=parseMesAno(mesRaw);
         
-        // NOVA COLUNA FINANCEIRA - tentar vários nomes possíveis
+        // COLUNA FINANCEIRA - tentar vários nomes possíveis
         let financeiroVal = 0;
         if(r["FINANCEIRO"] !== undefined) financeiroVal = parseFinanceiro(r["FINANCEIRO"]);
         else if(r["VALOR"] !== undefined) financeiroVal = parseFinanceiro(r["VALOR"]);
@@ -2258,12 +2258,23 @@
         });
 
       const arr=[...map.entries()].map(([k,v])=>({idade:k,...v})).sort((a,b)=>idadeKey(a.idade)-idadeKey(b.idade));
-      charts["cTop"]=new Chart(ctx,{
-        type:"bar",
-        data:{labels:arr.map(x=>x.idade),datasets:[
-          {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
-          {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
-        ]},
+      function resumirNomeEspecialidade(nome) {
+  return nome
+    .replace(/^OCI\s*/i, '')
+    .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, 'OFTALMO ')
+    .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, 'INVEST. CA ')
+    .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, 'PROG. CA ')
+    .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, 'DIAG/TERAP CA ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+charts["cTop"]=new Chart(ctx,{
+  type:"bar",
+  data:{labels:arr.map(x => resumirNomeEspecialidade(x.esp)), // <-- APENAS ESTA LINHA MUDA!
+        datasets:[
+    {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
+    {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
+  ]},
         options:{
           ...baseOptions(),
           indexAxis:"y",
@@ -2313,7 +2324,7 @@
         },
         scales:{
           x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.05)"}},
-          y:{ticks:{font:{size:11,weight:"700"},padding:6},grid:{display:false}}
+          y:{ticks:{font:{size:12,weight:"700"},padding:6},grid:{display:false}}
         }
       }
     });
@@ -2416,14 +2427,14 @@
           x: {
             beginAtZero: true,
             ticks: {
-              font: { size: 11, weight: "700" },
+              font: { size: 12, weight: "700" },
               callback: (v) => formatBRLCompact(v)
             },
             grid: { color: "rgba(2,6,23,.05)" }
           },
           y: {
             ticks: {
-              font: { size: 10, weight: "700" },
+              font: { size: 12, weight: "700" },
               padding: 4
             },
             grid: { display: false }
@@ -2437,7 +2448,7 @@
       : "Faturamento total (R$) acumulado por especialidade (dados da coluna 'Financeiro')";
   }
 
-  // ===== GRÁFICO: Distribuição no Período (AGORA RESPONDE AOS FILTROS) =====
+  // ===== GRÁFICO: Distribuição no Período =====
   function buildDistribuicao(){
     destroy("cDistribuicao");
     const ctx=el("cDistribuicao").getContext("2d");
