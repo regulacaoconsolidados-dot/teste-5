@@ -1540,7 +1540,7 @@
       .replace(/\s+/g," ").trim();
   }
 
-  // ===== LOAD OCI DATA (AGORA COM COLUNA FINANCEIRA) =====
+  // ===== LOAD OCI DATA =====
   async function loadData(showMsg=false){
     el("loading").classList.add("on");
     if(showMsg) toast("Sincronizando com Google Sheets…","info");
@@ -1577,7 +1577,7 @@
           agendado:toInt(r["AGENDADO"]),recepcionado:toInt(r["RECEPCIONADO"]),
           apac:toInt(r["APAC GERADAS"]||r["APAC"]||r["APACGERADAS"]),
           faturado:toInt(r["FATURADO"]),
-          financeiro: financeiroVal // NOVO CAMPO
+          financeiro: financeiroVal
         };
       }).filter(x=>x.especialidade);
       allData.sort((a,b)=>mesSortKey(a)-mesSortKey(b)||a.especialidade.localeCompare(b.especialidade));
@@ -2127,9 +2127,9 @@
     buildGaugeFatRec(indMes);
     buildGaugeAbsenteismo(indMes);
 
-    // GRÁFICOS QUE AGORA RESPONDEM AOS FILTROS
-    buildReceita();        // Agora usa receitaFilterMonth e o filtro global
-    buildDistribuicao();   // Agora usa distribuicaoFilterMonth e o filtro global
+    // GRÁFICOS COM FILTROS
+    buildReceita();  
+    buildDistribuicao(); 
 
     el("subEvolucao").textContent=esp
       ?`Especialidade: ${esp} • ${mes?("Mês: "+labelMes(mes)):"Todos os meses"}`
@@ -2230,7 +2230,7 @@
         },
         layout: {
           padding: {
-            top: 40,    // Aumentado padding superior para afastar a legenda
+            top: 60,    // Aumentado padding superior para afastar a legenda
             bottom: 20
           }
         }
