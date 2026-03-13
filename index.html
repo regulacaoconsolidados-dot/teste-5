@@ -663,7 +663,7 @@
       <div class="kpi apac">
         <div class="kpiIcon"><i class="fa-solid fa-file-medical"></i></div>
         <div>
-          <div class="label">Total APAC Geradas</div>
+          <div class="label">Total APAC Autorizadas</div>
           <div class="val" id="kApac">0</div>
           <div class="sub" id="kApacSub">—</div>
         </div>
@@ -2475,7 +2475,7 @@
     charts["cDistribuicao"] = new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: ["Agendados", "Recepcionados", "APAC Geradas", "Faturados"],
+        labels: ["Agendados", "Recepcionados", "APAC Autorizadas", "Faturados"],
         datasets: [{
           data: [ag, rec, apac, fat],
           backgroundColor: [
