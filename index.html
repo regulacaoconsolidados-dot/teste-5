@@ -791,18 +791,15 @@
                 <div class="chartSub" id="subEvolucao">Selecione uma especialidade para detalhar • Mês/Ano = Todos mostra a linha do tempo completa</div>
               </div>
             </div>
+            <!-- Altura aumentada para 450px e legenda ajustada -->
             <div class="chartWrap" style="height:450px;">
               <canvas id="cEvolucao"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- ============================================================
-             LINHA: Top Especialidades + Receita Financeira por Especialidade
-             ============================================================ -->
+        <!-- PRIMEIRA LINHA DE GRÁFICOS: Top Especialidades e Receita Financeira (alinhados) -->
         <div class="row2eq align-start" style="margin-top:14px;">
-
-          <!-- GRÁFICO 1: Top Especialidades -->
           <div class="chartCard">
             <div class="chartHead">
               <div>
@@ -829,12 +826,12 @@
             </div>
           </div>
 
-          <!-- GRÁFICO 2: Receita Financeira por Especialidade -->
+          <!-- GRÁFICO DE RECEITA (agora em verde e com dados corrigidos) -->
           <div class="chartCard">
             <div class="chartHead">
               <div>
                 <h3 id="titleReceita">Receita Financeira por Especialidade</h3>
-                <div class="chartSub" id="subReceita">Faturamento financeiro (R$) por especialidade — dados da aba Consolidados OCI</div>
+                <div class="chartSub" id="subReceita">Faturamento total (R$) por especialidade no período (dados da coluna 'Financeiro')</div>
               </div>
               <div class="chart-filter-wrapper">
                 <div class="chart-filter-badge" onclick="toggleChartFilter('receitaFilter', event)">
@@ -851,15 +848,45 @@
                 </div>
               </div>
             </div>
-            <div id="cReceitaWrap" class="chartWrap" style="height:480px;">
+            <div class="chartWrap" style="height:480px;">
               <canvas id="cReceita"></canvas>
             </div>
           </div>
+        </div>
 
-        </div><!-- /row2eq Top + Receita -->
-
-      </div><!-- /card section -->
-    </section><!-- /tab-visao -->
+        <!-- SEGUNDA LINHA DE GRÁFICOS: Apenas Distribuição no Período -->
+        <div class="bottom-charts" style="margin-top:14px;">
+          <div class="chartCard">
+            <div class="chartHead">
+              <div>
+                <h3><i class="fa-solid fa-chart-pie" style="color:#0f2f5f"></i> Distribuição no Período</h3>
+                <div class="chartSub">Participação percentual de cada métrica no total do período selecionado</div>
+              </div>
+              <div class="chart-filter-wrapper">
+                <div class="chart-filter-badge" onclick="toggleChartFilter('distribuicaoFilter', event)">
+                  <i class="fa-solid fa-filter"></i> Filtrar por mês
+                </div>
+                <div id="distribuicaoFilter" class="chart-filter-popup">
+                  <select id="distribuicaoMesSelect">
+                    <option value="">Todos os meses</option>
+                  </select>
+                  <div class="filter-actions">
+                    <button class="btn-filter-apply" onclick="applyDistribuicaoFilter()">Aplicar</button>
+                    <button class="btn-filter-clear" onclick="clearDistribuicaoFilter()">Limpar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chartWrap" style="height:400px;">
+              <canvas id="cDistribuicao"></canvas>
+            </div>
+          </div>
+          <div class="chartCard" style="visibility:hidden;">
+            <!-- Card invisível para manter o grid 2 colunas -->
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Tab: Tabela -->
     <section class="tabContent" id="tab-tabela" style="margin-top:14px;">
@@ -925,6 +952,7 @@
                   </div>
                   <span class="sort-icon"></span>
                 </th>
+                <!-- NOVA COLUNA FINANCEIRA -->
                 <th data-col="financeiro" onclick="sortTable('financeiro', this)">
                   <div class="th-filter-wrapper">
                     <span>Financeiro (R$)</span>
@@ -960,6 +988,7 @@
         </div>
       </div>
 
+      <!-- KPIs Financeiros em Reais -->
       <div class="kpis" style="margin-top:14px;">
         <div class="kpi fin1">
           <div class="kpiIcon"><i class="fa-solid fa-sack-dollar"></i></div>
@@ -1048,6 +1077,7 @@
                 <h3><i class="fa-solid fa-chart-pie" style="color:#8b5cf6;margin-right:6px"></i>Participação das Especialidades no Total</h3>
                 <div class="chartSub">Fatia % de cada especialidade sobre a receita total acumulada</div>
               </div>
+
               <div class="chart-filter-wrapper">
                 <div class="chart-filter-badge" onclick="toggleChartFilter('finDonutFilter', event)">
                   <i class="fa-solid fa-filter"></i> Filtrar por mês
@@ -1063,6 +1093,7 @@
                 </div>
               </div>
             </div>
+
             <div class="chartWrap" style="height:360px;">
               <canvas id="cFinDonut"></canvas>
             </div>
@@ -1141,23 +1172,23 @@
   let allEspecialidades = [];
 
   // Chart filter states
-  let topEspFilterMonth      = "";
+  let topEspFilterMonth = "";
   let indicadoresFilterMonth = "";
-  let receitaFilterMonth     = "";
-  let distribuicaoFilterMonth= "";
+  let receitaFilterMonth = "";
+  let distribuicaoFilterMonth = "";
 
   // Chart filter states (Financeiro)
   let receitaEspFilterMonth = "";
-  let finDonutFilterMonth   = "";
+  let finDonutFilterMonth = "";
 
   // Column filter states
-  let activeColumnFilter    = null;
-  let columnFilterValues    = [];
+  let activeColumnFilter = null;
+  let columnFilterValues = [];
 
   // Financial column filter states
-  let activeFinColumnFilter  = null;
-  let finColumnFilterValues  = [];
-  let finColumnFilterType    = null;
+  let activeFinColumnFilter = null;
+  let finColumnFilterValues = [];
+  let finColumnFilterType = null;
 
   // ===== FINANCIAL STATE =====
   let finData   = [];
@@ -1249,8 +1280,8 @@
   function normStr(v){ if(v===null||v===undefined) return ""; return String(v).normalize("NFC").replace(/\s+/g," ").trim(); }
   function normHeader(h){ return normStr(h).toUpperCase(); }
   function toInt(v){ const s=normStr(v).toUpperCase(); if(!s||s==="SEM DADOS") return 0; const n=parseInt(s.replace(/[^\d-]/g,""),10); return Number.isFinite(n)?n:0; }
-
-  // FUNÇÃO: parse financeiro da coluna FINANCEIRO (consolidados OCI)
+  
+  // NOVA FUNÇÃO: parse financeiro da nova coluna
   function parseFinanceiro(v){
     const s=normStr(v).toUpperCase().trim();
     if(!s||s==="NT"||s==="-"||s==="N/A"||s==="—"||s==="S/D"||s==="SEM DADOS") return 0;
@@ -1258,7 +1289,7 @@
     const n=parseFloat(clean);
     return isNaN(n)?0:n;
   }
-
+  
   function parseMesAno(raw){
     const s=normStr(raw).toLowerCase();
     if(!s) return {key:"",label:"",y:0,m:0};
@@ -1278,6 +1309,16 @@
     m=v.match(/(\d{1,3})/);
     if(m) return parseInt(m[1],10);
     return 999998;
+  }
+
+  // ===== FUNÇÃO PARA NORMALIZAR NOMES DE ESPECIALIDADES =====
+  function normalizeEspName(esp) {
+    return esp
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   // ===== FILTER POPUP FUNCTIONS =====
@@ -1316,7 +1357,6 @@
     updateCharts();
   }
 
-  // ===== RECEITA FILTER (Visão Geral) =====
   function applyReceitaFilter() {
     receitaFilterMonth = el("receitaMesSelect").value;
     el("receitaFilter").classList.remove('show');
@@ -1330,14 +1370,14 @@
   }
 
   function applyDistribuicaoFilter() {
-    distribuicaoFilterMonth = el("distribuicaoMesSelect") ? el("distribuicaoMesSelect").value : "";
-    if(el("distribuicaoFilter")) el("distribuicaoFilter").classList.remove('show');
+    distribuicaoFilterMonth = el("distribuicaoMesSelect").value;
+    el("distribuicaoFilter").classList.remove('show');
     buildDistribuicao();
   }
   function clearDistribuicaoFilter() {
     distribuicaoFilterMonth = "";
-    if(el("distribuicaoMesSelect")) el("distribuicaoMesSelect").value = "";
-    if(el("distribuicaoFilter")) el("distribuicaoFilter").classList.remove('show');
+    el("distribuicaoMesSelect").value = "";
+    el("distribuicaoFilter").classList.remove('show');
     buildDistribuicao();
   }
 
@@ -1365,35 +1405,40 @@
     buildFinDonut();
   }
 
-  // ===== COLUMN FILTER (tabela principal) =====
+  // Column filter functions for main table
   function toggleColumnFilter(col, event) {
     event.stopPropagation();
     const popup = el("columnFilterPopup");
     const select = el("colFilterSelect");
+
     let values = [];
     if(col === 'especialidade') {
       values = [...new Set(dataF.map(x => x.especialidade))].sort();
     } else if(col === 'idade') {
-      values = [...new Set(dataF.map(x => x.idade || "Não informado"))].sort();
+            values = [...new Set(dataF.map(x => x.idade || "Não informado"))].sort();
     } else if(col === 'mesKey') {
       values = [...new Set(dataF.map(x => x.mesLabel || x.mesRaw))].sort();
     } else {
       toast("Filtro para colunas numéricas em desenvolvimento","info");
       return;
     }
+
     select.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join('');
     activeColumnFilter = col;
+
     const rect = event.target.getBoundingClientRect();
     popup.style.top = (rect.bottom + window.scrollY + 5) + 'px';
     popup.style.left = (rect.left + window.scrollX - 180) + 'px';
     popup.classList.add('show');
   }
+
   function applyColumnFilter() {
     const select = el("colFilterSelect");
     columnFilterValues = Array.from(select.selectedOptions).map(opt => opt.value);
     el("columnFilterPopup").classList.remove('show');
     renderTable();
   }
+
   function clearColumnFilter() {
     columnFilterValues = [];
     el("colFilterSelect").value = "";
@@ -1401,11 +1446,12 @@
     renderTable();
   }
 
-  // ===== FINANCIAL COLUMN FILTER =====
+  // Financial column filter functions
   function toggleFinColumnFilter(type, event) {
     event.stopPropagation();
     const popup = el("finColumnFilterPopup");
     const select = el("finColFilterSelect");
+
     let options = [];
     if(type === 'esp') {
       options = finData.map(r => ({value:r.esp, label:r.esp})).sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'));
@@ -1427,18 +1473,22 @@
       finColumnFilterType = 'total';
       activeFinColumnFilter = null;
     }
+
     select.innerHTML = options.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+
     const rect = event.target.getBoundingClientRect();
     popup.style.top = (rect.bottom + window.scrollY + 5) + 'px';
     popup.style.left = (rect.left + window.scrollX - 180) + 'px';
     popup.classList.add('show');
   }
+
   function applyFinColumnFilter() {
     const select = el("finColFilterSelect");
     finColumnFilterValues = Array.from(select.selectedOptions).map(opt => opt.value);
     el("finColumnFilterPopup").classList.remove('show');
     renderFinTable();
   }
+
   function clearFinColumnFilter() {
     finColumnFilterValues = [];
     finColumnFilterType = null;
@@ -1490,7 +1540,7 @@
       .replace(/\s+/g," ").trim();
   }
 
-  // ===== LOAD OCI DATA (ABABNA consolidados OCI — inclui coluna FINANCEIRO) =====
+  // ===== LOAD OCI DATA (AGORA COM COLUNA FINANCEIRA) =====
   async function loadData(showMsg=false){
     el("loading").classList.add("on");
     if(showMsg) toast("Sincronizando com Google Sheets…","info");
@@ -1504,31 +1554,32 @@
         const idade=normStr(r["IDADE"]);
         const mesRaw=normStr(r["MÊS/2025"]||r["MES/2025"]||r["MÊS"]||r["MES"]);
         const mes=parseMesAno(mesRaw);
-
-        // Coluna FINANCEIRO da aba consolidados OCI — tenta vários nomes possíveis
+        
+        // NOVA COLUNA FINANCEIRA - tentar vários nomes possíveis
         let financeiroVal = 0;
-        if(r["FINANCEIRO"] !== undefined)      financeiroVal = parseFinanceiro(r["FINANCEIRO"]);
-        else if(r["VALOR"] !== undefined)      financeiroVal = parseFinanceiro(r["VALOR"]);
-        else if(r["RECEITA"] !== undefined)    financeiroVal = parseFinanceiro(r["RECEITA"]);
-        else if(r["R$"] !== undefined)         financeiroVal = parseFinanceiro(r["R$"]);
+        if(r["FINANCEIRO"] !== undefined) financeiroVal = parseFinanceiro(r["FINANCEIRO"]);
+        else if(r["VALOR"] !== undefined) financeiroVal = parseFinanceiro(r["VALOR"]);
+        else if(r["RECEITA"] !== undefined) financeiroVal = parseFinanceiro(r["RECEITA"]);
+        else if(r["R$"] !== undefined) financeiroVal = parseFinanceiro(r["R$"]);
         else {
-          // última coluna como fallback
+          // Tentar a última coluna (se não tiver nome específico)
           const keys = Object.keys(r);
-          if(keys.length > 0) financeiroVal = parseFinanceiro(r[keys[keys.length-1]]);
+          if(keys.length > 0) {
+            const lastKey = keys[keys.length - 1];
+            financeiroVal = parseFinanceiro(r[lastKey]);
+          }
         }
-
+        
         return {
-          especialidade: especialidade.replace(/\s+/g," ").trim(),
-          idade, mesRaw,
-          mesKey:mes.key, mesLabel:mes.label, mesY:mes.y, mesM:mes.m,
-          agendado:    toInt(r["AGENDADO"]),
-          recepcionado:toInt(r["RECEPCIONADO"]),
-          apac:        toInt(r["APAC GERADAS"]||r["APAC"]||r["APACGERADAS"]),
-          faturado:    toInt(r["FATURADO"]),
-          financeiro:  financeiroVal
+          especialidade:especialidade.replace(/\s+/g," ").trim(),
+          idade,mesRaw,
+          mesKey:mes.key,mesLabel:mes.label,mesY:mes.y,mesM:mes.m,
+          agendado:toInt(r["AGENDADO"]),recepcionado:toInt(r["RECEPCIONADO"]),
+          apac:toInt(r["APAC GERADAS"]||r["APAC"]||r["APACGERADAS"]),
+          faturado:toInt(r["FATURADO"]),
+          financeiro: financeiroVal // NOVO CAMPO
         };
       }).filter(x=>x.especialidade);
-
       allData.sort((a,b)=>mesSortKey(a)-mesSortKey(b)||a.especialidade.localeCompare(b.especialidade));
       fillFilters();
       populateOciMonthFilterSelects();
@@ -1544,7 +1595,7 @@
     }finally{ el("loading").classList.remove("on"); }
   }
 
-  // ===== LOAD FINANCIAL DATA (aba Financeiro separada) =====
+  // ===== LOAD FINANCIAL DATA =====
   async function loadFinData(showMsg=false){
     if(showMsg) toast("Sincronizando dados financeiros…","info");
     try{
@@ -1607,8 +1658,10 @@
 
     el("fKTotal").textContent=formatBRLCompact(totalGeral);
     el("fKTotalSub").textContent=`${finMonths.length} competências • ${finData.length} especialidades`;
+
     el("fKBest").textContent=formatBRLCompact(bestMonth?.total||0);
     el("fKBestSub").textContent=bestMonth?`Competência: ${bestMonth.shortLabel}`:"—";
+
     el("fKAvg").textContent=formatBRLCompact(avg);
     if(prevM&&lastM){
       const delta=lastM.total-prevM.total;
@@ -1619,6 +1672,7 @@
     } else {
       el("fKAvgSub").textContent=`Média de ${activeMths.length} meses ativos`;
     }
+
     el("fKTopEsp").textContent=formatBRLCompact(topEsp?.total||0);
     const espAbr=topEsp?espShort(topEsp.esp):"—";
     el("fKTopEspSub").textContent=(espAbr.length>38?espAbr.substring(0,36)+"…":espAbr)+" — maior receita";
@@ -1627,9 +1681,11 @@
   // ===== BUILD ALL FINANCIAL CHARTS =====
   function buildFinCharts(){
     if(!finData.length||!finMonths.length) return;
+
     const monthOptions = finMonths.map(m => `<option value="${m.key}">${m.shortLabel}</option>`).join('');
     el("receitaEspMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
-    el("finDonutMesSelect").innerHTML   = '<option value="">Todos os meses</option>' + monthOptions;
+    el("finDonutMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
+
     buildFinEvolucao();
     buildFinBarEsp();
     buildFinDonut();
@@ -1680,7 +1736,10 @@
           x:{ticks:{font:{size:13,weight:"700"}},grid:{display:false}},
           y:{
             beginAtZero:true,
-            ticks:{font:{size:11,weight:"700"},callback:(v)=>formatBRLCompact(v)},
+            ticks:{
+              font:{size:11,weight:"700"},
+              callback:(v)=>formatBRLCompact(v)
+            },
             grid:{color:"rgba(2,6,23,.06)"}
           }
         }
@@ -1696,8 +1755,8 @@
         const delta=prev.total?((m.total-prev.total)/prev.total*100):0;
         const sign=delta>=0?"+":"";
         const col=delta>=0?"#059669":"#b91c1c";
-        const arr2=delta>=0?"↑":"↓";
-        return `<div class="fin-mom-pill">${base}<span class="fin-mom-pill-delta" style="color:${col}">${arr2} ${sign}${delta.toFixed(1)}%</span></div>`;
+        const arr=delta>=0?"↑":"↓";
+        return `<div class="fin-mom-pill">${base}<span class="fin-mom-pill-delta" style="color:${col}">${arr} ${sign}${delta.toFixed(1)}%</span></div>`;
       });
       momBar.innerHTML=pills.join("");
     }
@@ -1707,10 +1766,15 @@
   function buildFinBarEsp(){
     destroy("cFinBarEsp");
     const ctx=el("cFinBarEsp").getContext("2d");
+
     let dataToUse = finData;
     if(receitaEspFilterMonth) {
-      dataToUse = finData.map(r => ({...r, total: r.monthValues[receitaEspFilterMonth] || 0})).filter(r => r.total > 0);
+      dataToUse = finData.map(r => ({
+        ...r,
+        total: r.monthValues[receitaEspFilterMonth] || 0
+      })).filter(r => r.total > 0);
     }
+
     const sorted=[...dataToUse].sort((a,b)=>a.total-b.total);
     charts["cFinBarEsp"]=new Chart(ctx,{
       type:"bar",
@@ -1738,7 +1802,14 @@
           }}
         },
         scales:{
-          x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"},callback:(v)=>formatBRLCompact(v)},grid:{color:"rgba(2,6,23,.05)"}},
+          x:{
+            beginAtZero:true,
+            ticks:{
+              font:{size:11,weight:"700"},
+              callback:(v)=>formatBRLCompact(v)
+            },
+            grid:{color:"rgba(2,6,23,.05)"}
+          },
           y:{ticks:{font:{size:10,weight:"700"},padding:4},grid:{display:false}}
         }
       }
@@ -1749,14 +1820,20 @@
   function buildFinDonut(){
     destroy("cFinDonut");
     const ctx=el("cFinDonut").getContext("2d");
+
     let dataToUse = finData;
     if(finDonutFilterMonth){
-      dataToUse = finData.map(r => ({esp:r.esp, total: r.monthValues[finDonutFilterMonth] || 0})).filter(r=>r.total>0);
+      dataToUse = finData.map(r => ({
+        esp: r.esp,
+        total: r.monthValues[finDonutFilterMonth] || 0
+      })).filter(r => r.total > 0);
     } else {
       dataToUse = finData.map(r => ({esp:r.esp, total:r.total})).filter(r=>r.total>0);
     }
+
     const labels = dataToUse.map(r=>espShort(r.esp));
     const values = dataToUse.map(r=>r.total);
+
     charts["cFinDonut"]=new Chart(ctx,{
       type:"doughnut",
       data:{
@@ -1813,6 +1890,7 @@
   function buildFinStack(){
     destroy("cFinStack");
     const ctx=el("cFinStack").getContext("2d");
+
     charts["cFinStack"]=new Chart(ctx,{
       type:"bar",
       data:{
@@ -1821,7 +1899,10 @@
           label:espShort(r.esp),
           data:finMonths.map(m=>r.monthValues[m.key]||0),
           backgroundColor:FIN_COLORS[i%FIN_COLORS.length],
-          borderRadius:6,borderSkipped:false,barPercentage:0.9,categoryPercentage:0.8
+          borderRadius:6,
+          borderSkipped:false,
+          barPercentage:0.9,
+          categoryPercentage:0.8
         }))
       },
       options:{
@@ -1830,22 +1911,34 @@
           legend:{
             position:"bottom",
             labels:{
-              font:{size:10,weight:"700"},padding:10,boxWidth:12,
-              filter:(legendItem,data)=>{
-                const dataset=data.datasets[legendItem.datasetIndex];
-                return dataset.data.some(v=>v>0);
+              font:{size:10,weight:"700"},
+              padding:10,
+              boxWidth:12,
+              filter: (legendItem, data) => {
+                const dataset = data.datasets[legendItem.datasetIndex];
+                return dataset.data.some(v => v > 0);
               }
             }
           },
-          datalabels:{display:false},
+          datalabels:{ display:false },
           tooltip:{
-            mode:'index',intersect:false,
-            callbacks:{label:(ctx)=>` ${ctx.dataset.label}: ${formatBRL(Number(ctx.raw||0))}`}
+            mode: 'index',
+            intersect: false,
+            callbacks:{
+              label:(ctx)=>` ${ctx.dataset.label}: ${formatBRL(Number(ctx.raw||0))}`
+            }
           }
         },
         scales:{
-          x:{stacked:false,ticks:{font:{size:13,weight:"700"}},grid:{display:false}},
-          y:{beginAtZero:true,ticks:{font:{size:11,weight:"700"},callback:(v)=>formatBRLCompact(v)},grid:{color:"rgba(2,6,23,.06)"}}
+          x:{ stacked:false, ticks:{font:{size:13,weight:"700"}}, grid:{display:false} },
+          y:{
+            beginAtZero:true,
+            ticks:{
+              font:{size:11,weight:"700"},
+              callback:(v)=>formatBRLCompact(v)
+            },
+            grid:{color:"rgba(2,6,23,.06)"}
+          }
         }
       }
     });
@@ -1858,29 +1951,35 @@
       wrap.innerHTML=`<div style="padding:20px;text-align:center;color:var(--muted);font-weight:700;">Nenhum dado financeiro disponível.</div>`;
       return;
     }
+
     let dataToShow = [...finData];
+
     if(finColumnFilterValues.length > 0 && finColumnFilterType){
       if(finColumnFilterType === 'esp'){
         dataToShow = dataToShow.filter(r => finColumnFilterValues.includes(r.esp));
       }
+
       if(finColumnFilterType === 'month' && activeFinColumnFilter){
         const wantPos = finColumnFilterValues.includes("__POS__");
         const wantZero = finColumnFilterValues.includes("__ZERO__");
-        if(wantPos && !wantZero)  dataToShow = dataToShow.filter(r => (r.monthValues[activeFinColumnFilter]||0) > 0);
-        if(!wantPos && wantZero)  dataToShow = dataToShow.filter(r => (r.monthValues[activeFinColumnFilter]||0) <= 0);
+        if(wantPos && !wantZero) dataToShow = dataToShow.filter(r => (r.monthValues[activeFinColumnFilter]||0) > 0);
+        if(!wantPos && wantZero) dataToShow = dataToShow.filter(r => (r.monthValues[activeFinColumnFilter]||0) <= 0);
         if(!wantPos && !wantZero) dataToShow = [];
       }
+
       if(finColumnFilterType === 'total'){
         const wantPos = finColumnFilterValues.includes("__POS__");
         const wantZero = finColumnFilterValues.includes("__ZERO__");
-        if(wantPos && !wantZero)  dataToShow = dataToShow.filter(r => (r.total||0) > 0);
-        if(!wantPos && wantZero)  dataToShow = dataToShow.filter(r => (r.total||0) <= 0);
+        if(wantPos && !wantZero) dataToShow = dataToShow.filter(r => (r.total||0) > 0);
+        if(!wantPos && wantZero) dataToShow = dataToShow.filter(r => (r.total||0) <= 0);
         if(!wantPos && !wantZero) dataToShow = [];
       }
     }
+
     const monthTotals={};
     finMonths.forEach(m=>{ monthTotals[m.key]=finData.reduce((acc,r)=>acc+(r.monthValues[m.key]||0),0); });
     const grandTotal=finData.reduce((acc,r)=>acc+r.total,0);
+
     const thBase="padding:10px 14px;font-size:11px;letter-spacing:.35px;text-transform:uppercase;white-space:nowrap;position:sticky;top:0;";
     const html=`
       <table style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -1940,12 +2039,17 @@
 
   function populateOciMonthFilterSelects(){
     const meses = [...new Map(
-      allData.filter(x=>x.mesKey).sort((a,b)=>mesSortKey(a)-mesSortKey(b)).map(x=>[x.mesKey, x.mesLabel])
+      allData
+        .filter(x=>x.mesKey)
+        .sort((a,b)=>mesSortKey(a)-mesSortKey(b))
+        .map(x=>[x.mesKey, x.mesLabel])
     ).entries()].map(([key,label])=>({key,label}));
+
     const html = `<option value="">Todos os meses</option>` + meses.map(m=>`<option value="${m.key}">${m.label}</option>`).join("");
-    if(el("topEspMesSelect"))     el("topEspMesSelect").innerHTML     = html;
+
+    if(el("topEspMesSelect")) el("topEspMesSelect").innerHTML = html;
     if(el("indicadoresMesSelect")) el("indicadoresMesSelect").innerHTML = html;
-    if(el("receitaMesSelect"))    el("receitaMesSelect").innerHTML    = html;
+    if(el("receitaMesSelect")) el("receitaMesSelect").innerHTML = html;
     if(el("distribuicaoMesSelect")) el("distribuicaoMesSelect").innerHTML = html;
   }
 
@@ -2003,6 +2107,7 @@
     if(!monthKey) return dataF;
     const globalMes = el("fMesAno").value;
     if(globalMes && globalMes === monthKey) return dataF;
+
     return allData.filter(x=>{
       if(selectedEspecialidades.size>0 && selectedEspecialidades.size<allEspecialidades.length){
         if(!selectedEspecialidades.has(x.especialidade)) return false;
@@ -2014,13 +2119,18 @@
   // ===== UPDATE ALL OCI CHARTS =====
   function updateCharts(){
     const esp=getActiveEsp(), mes=el("fMesAno").value;
+
     buildEvolucao(esp,mes);
     buildTop(esp, topEspFilterMonth || mes);
+
     const indMes = indicadoresFilterMonth || mes;
     buildGaugeFatRec(indMes);
     buildGaugeAbsenteismo(indMes);
-    buildReceita();
-    buildDistribuicao();
+
+    // GRÁFICOS QUE AGORA RESPONDEM AOS FILTROS
+    buildReceita();        // Agora usa receitaFilterMonth e o filtro global
+    buildDistribuicao();   // Agora usa distribuicaoFilterMonth e o filtro global
+
     el("subEvolucao").textContent=esp
       ?`Especialidade: ${esp} • ${mes?("Mês: "+labelMes(mes)):"Todos os meses"}`
       :`Especialidade: Todas • ${mes?("Mês: "+labelMes(mes)):"Todos os meses"}`;
@@ -2030,8 +2140,10 @@
   function buildGaugeFatRec(monthKey){
     destroy("cGaugeFatRec");
     const ctx=el("cGaugeFatRec").getContext("2d");
+
     const rows = getOciDataForMonth(monthKey);
     const rec=sum("recepcionado", rows), fat=sum("faturado", rows);
+
     const pctVal=rec>0?Math.min((fat/rec)*100,100):0;
     let color,badgeBg,badgeColor,badgeText;
     if(pctVal>=80){color="#059669";badgeBg="rgba(5,150,105,.30)";badgeColor="#064e3b";badgeText="✓ Ótimo";}
@@ -2047,8 +2159,10 @@
   function buildGaugeAbsenteismo(monthKey){
     destroy("cGaugeAbs");
     const ctx=el("cGaugeAbs").getContext("2d");
+
     const rows = getOciDataForMonth(monthKey);
     const ag=sum("agendado", rows), rec=sum("recepcionado", rows), ausencias=Math.max(0,ag-rec);
+
     const absPct=ag>0?Math.min((ausencias/ag)*100,100):0;
     let color,badgeBg,badgeColor,badgeText;
     if(absPct<=10){color="#059669";badgeBg="rgba(5,150,105,.30)";badgeColor="#064e3b";badgeText="✓ Excelente";}
@@ -2073,6 +2187,7 @@
           return true;
         })
       : dataF;
+
     const map=new Map();
     source.forEach(x=>{
       if(!x.mesKey) return;
@@ -2088,4 +2203,425 @@
         labels:arr.map(x=>x.label),
         datasets:[
           {label:"Agendado",data:arr.map(x=>x.ag),borderColor:"#3b82f6",backgroundColor:"rgba(59,130,246,.10)",tension:.35,fill:true,borderWidth:2.5,pointRadius:5,pointHoverRadius:7},
-          {label:"Recepcionado",data:arr.map(x=>x.rec),
+          {label:"Recepcionado",data:arr.map(x=>x.rec),borderColor:"#059669",backgroundColor:"rgba(5,150,105,.08)",tension:.35,fill:false,borderWidth:2.5,pointRadius:5,pointHoverRadius:7},
+          {label:"APAC",data:arr.map(x=>x.apac),borderColor:"#d97706",backgroundColor:"rgba(217,119,6,.10)",tension:.35,fill:false,borderWidth:2.5,pointRadius:5,pointHoverRadius:7},
+          {label:"Faturado",data:arr.map(x=>x.fat),borderColor:"#b91c1c",backgroundColor:"rgba(185,28,28,.08)",tension:.35,fill:false,borderWidth:2.5,pointRadius:5,pointHoverRadius:7}
+        ]
+      },
+      options:{
+        ...baseOptions(),
+        plugins:{
+          ...baseOptions().plugins,
+          legend:{
+            position:"top",
+            labels:{
+              font:{size:13,weight:"800"},
+              padding:30,  // Aumentado padding para dar mais espaço
+              usePointStyle: true,
+              pointStyle: "circle"
+            }
+          },
+          datalabels:{
+            display:true,anchor:"end",align:"top",offset:6, // Aumentado offset para afastar da linha
+            color:(ctx)=>datasetColors[ctx.datasetIndex]||"#0f172a",
+            font:{size:11,weight:"800"},
+            formatter:(v)=>v?v.toLocaleString("pt-BR"):""
+          }
+        },
+        layout: {
+          padding: {
+            top: 40,    // Aumentado padding superior para afastar a legenda
+            bottom: 20
+          }
+        }
+      }
+    });
+  }
+
+  // ===== CHART: Top Especialidades =====
+  function buildTop(esp,mes){
+    destroy("cTop");
+    const ctx=el("cTop").getContext("2d");
+
+    const source = getOciDataForMonth(mes);
+
+    if(esp){
+      const map=new Map();
+      source
+        .filter(x => x.especialidade === esp)
+        .forEach(x=>{
+          const k=x.idade||"Não informado";
+          if(!map.has(k)) map.set(k,{rec:0,fat:0});
+          const o=map.get(k);
+          o.rec+=x.recepcionado;
+          o.fat+=x.faturado;
+        });
+
+      const arr=[...map.entries()].map(([k,v])=>({idade:k,...v})).sort((a,b)=>idadeKey(a.idade)-idadeKey(b.idade));
+      charts["cTop"]=new Chart(ctx,{
+        type:"bar",
+        data:{labels:arr.map(x=>x.idade),datasets:[
+          {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
+          {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
+        ]},
+        options:{
+          ...baseOptions(),
+          indexAxis:"y",
+          plugins:{
+            ...baseOptions().plugins,
+            legend:{position:"top",labels:{font:{size:12,weight:"800"}}},
+            datalabels:{display:true,anchor:"end",align:"right",color:"#0f172a",font:{size:11,weight:"800"},formatter:(v)=>v?v.toLocaleString("pt-BR"):""}
+          },
+          scales:{
+            x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.05)"}},
+            y:{ticks:{font:{size:11,weight:"700"}},grid:{display:false}}
+          }
+        }
+      });
+      el("subTop").textContent = mes
+        ? `Recepcionado vs Faturado por faixa etária • Mês: ${labelMes(mes)}`
+        : "Recepcionado vs Faturado por faixa etária para a especialidade selecionada.";
+      el("cTopWrap").style.height="360px";
+      return;
+    }
+
+    const map=new Map();
+    source.forEach(x=>{
+      const k=x.especialidade;
+      if(!map.has(k)) map.set(k,{rec:0,fat:0});
+      const o=map.get(k);
+      o.rec+=x.recepcionado;
+      o.fat+=x.faturado;
+    });
+
+    const arr=[...map.entries()].map(([k,v])=>({esp:k,...v})).sort((a,b)=>b.rec-a.rec);
+    const dynamicH=Math.max(480,arr.length*48+80); // Garantir altura mínima de 480px
+    el("cTopWrap").style.height=dynamicH+"px";
+
+    charts["cTop"]=new Chart(ctx,{
+      type:"bar",
+      data:{labels:arr.map(x=>x.esp),datasets:[
+        {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
+        {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
+      ]},
+      options:{
+        responsive:true,maintainAspectRatio:false,indexAxis:"y",
+        plugins:{
+          legend:{position:"top",labels:{font:{size:13,weight:"800"},padding:18}},
+          datalabels:{display:true,anchor:"end",align:"right",color:"#0f172a",font:{size:11,weight:"800"},padding:{right:4},formatter:(v)=>v?v.toLocaleString("pt-BR"):""},
+          tooltip:{titleFont:{size:12,weight:"800"},bodyFont:{size:12}}
+        },
+        scales:{
+          x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.05)"}},
+          y:{ticks:{font:{size:11,weight:"700"},padding:6},grid:{display:false}}
+        }
+      }
+    });
+
+    el("subTop").textContent = mes
+      ? `Todas as especialidades — Mês: ${labelMes(mes)} (ordenado pelo maior Recepcionado).`
+      : "Todas as especialidades no período selecionado (do maior para o menor Recepcionado).";
+  }
+
+  // ===== GRÁFICO: Receita por Especialidade =====
+  function buildReceita(){
+    destroy("cReceita");
+    const ctx=el("cReceita").getContext("2d");
+
+    if(!allData.length) {
+      ctx.font = "14px Inter";
+      ctx.fillStyle = "#64748b";
+      ctx.textAlign = "center";
+      ctx.fillText("Carregando dados...", ctx.canvas.width/2, ctx.canvas.height/2);
+      return;
+    }
+
+    // Usar filtro de mês específico do gráfico OU filtro global
+    const mesFiltro = receitaFilterMonth || el("fMesAno").value;
+    
+    // Obter os dados com base no mês filtrado e nas especialidades selecionadas
+    const source = getOciDataForMonth(mesFiltro);
+
+    // Agrupar por especialidade e somar a coluna 'financeiro'
+    const mapFinanceiro = new Map();
+    source.forEach(item => {
+      const esp = item.especialidade;
+      if (!esp) return;
+      
+      const valor = item.financeiro || 0;
+      if (valor <= 0) return; // Ignorar valores zero ou nulos para este gráfico
+      
+      if (!mapFinanceiro.has(esp)) {
+        mapFinanceiro.set(esp, 0);
+      }
+      mapFinanceiro.set(esp, mapFinanceiro.get(esp) + valor);
+    });
+
+    if (mapFinanceiro.size === 0) {
+      ctx.font = "14px Inter";
+      ctx.fillStyle = "#64748b";
+      ctx.textAlign = "center";
+      ctx.fillText("Sem dados financeiros para o período selecionado", ctx.canvas.width/2, ctx.canvas.height/2);
+      return;
+    }
+
+    // Converter para array e ordenar por valor (maior para menor)
+    const dadosArray = Array.from(mapFinanceiro, ([esp, valor]) => ({ esp, valor }))
+                              .sort((a, b) => b.valor - a.valor);
+    
+    // Limitar a 15 itens para não poluir o gráfico
+    const dadosLimitados = dadosArray.slice(0, 15);
+    const labels = dadosLimitados.map(d => d.esp);
+    const valores = dadosLimitados.map(d => d.valor);
+
+    charts["cReceita"] = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "Receita (R$)",
+          data: valores,
+          backgroundColor: "#059669", // Verde
+          borderRadius: 6,
+          barThickness: 22
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: "y",
+        plugins: {
+          legend: {
+            display: false
+          },
+          datalabels: {
+            display: true,
+            anchor: "end",
+            align: "right",
+            color: "#0f172a",
+            font: { size: 11, weight: "800" },
+            formatter: (v) => formatBRL(v)
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => {
+                const i = items[0]?.dataIndex;
+                return i !== undefined ? dadosLimitados[i]?.esp || "" : "";
+              },
+              label: (ctx) => ` Receita: ${formatBRL(ctx.raw || 0)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: 11, weight: "700" },
+              callback: (v) => formatBRLCompact(v)
+            },
+            grid: { color: "rgba(2,6,23,.05)" }
+          },
+          y: {
+            ticks: {
+              font: { size: 10, weight: "700" },
+              padding: 4
+            },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    el("subReceita").textContent = mesFiltro && mesFiltro !== ""
+      ? `Faturamento (R$) por especialidade • Mês: ${labelMes(mesFiltro)}`
+      : "Faturamento total (R$) acumulado por especialidade (dados da coluna 'Financeiro')";
+  }
+
+  // ===== GRÁFICO: Distribuição no Período (AGORA RESPONDE AOS FILTROS) =====
+  function buildDistribuicao(){
+    destroy("cDistribuicao");
+    const ctx=el("cDistribuicao").getContext("2d");
+
+    const mesFiltro = distribuicaoFilterMonth || el("fMesAno").value;
+    const rows = getOciDataForMonth(mesFiltro);
+
+    const ag = sum("agendado", rows);
+    const rec = sum("recepcionado", rows);
+    const apac = sum("apac", rows);
+    const fat = sum("faturado", rows);
+
+    if(ag === 0 && rec === 0 && apac === 0 && fat === 0) {
+      ctx.font = "14px Inter";
+      ctx.fillStyle = "#64748b";
+      ctx.textAlign = "center";
+      ctx.fillText("Sem dados para o período selecionado", ctx.canvas.width/2, ctx.canvas.height/2);
+      return;
+    }
+
+    charts["cDistribuicao"] = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Agendados", "Recepcionados", "APAC Geradas", "Faturados"],
+        datasets: [{
+          data: [ag, rec, apac, fat],
+          backgroundColor: [
+            "#3b82f6",  // Azul
+            "#059669",  // Verde
+            "#d97706",  // Laranja
+            "#b91c1c"   // Vermelho sangue
+          ],
+          borderColor: "#ffffff",
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "65%",
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              font: { size: 12, weight: "700" },
+              padding: 15,
+              usePointStyle: true,
+              pointStyle: "circle",
+              color: "#0f172a",
+              generateLabels: (chart) => {
+                const data = chart.data;
+                if (!data.labels || !data.datasets) return [];
+                const { labels, datasets } = data;
+                const dataset = datasets[0];
+                const total = dataset.data.reduce((a, b) => a + b, 0);
+                
+                return labels.map((label, i) => ({
+                  text: `${label}: ${dataset.data[i].toLocaleString("pt-BR")} (${((dataset.data[i]/total)*100).toFixed(1)}%)`,
+                  fillStyle: dataset.backgroundColor[i],
+                  strokeStyle: dataset.backgroundColor[i],
+                  lineWidth: 2,
+                  hidden: false,
+                  index: i,
+                  fontColor: "#0f172a"
+                }));
+              }
+            }
+          },
+          datalabels: {
+            color: "#fff",
+            font: { size: 13, weight: "900" },
+            textShadowColor: "rgba(0,0,0,0.5)",
+            textShadowBlur: 4,
+            formatter: (value, context) => {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              if (!total || !value) return "";
+              const pct = (value / total) * 100;
+              return pct < 8 ? "" : pct.toFixed(1) + "%";
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const label = ctx.label || "";
+                const value = ctx.raw || 0;
+                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                const pct = ((value / total) * 100).toFixed(1);
+                return ` ${label}: ${value.toLocaleString("pt-BR")} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ===== TABLE SORTING =====
+  function sortTable(col,th){
+    if(tableSort.col===col){ tableSort.dir=tableSort.dir==="asc"?"desc":"asc"; }
+    else { tableSort.col=col; tableSort.dir="asc"; }
+    document.querySelectorAll("thead th").forEach(h=>h.classList.remove("sort-asc","sort-desc"));
+    th.classList.add(tableSort.dir==="asc"?"sort-asc":"sort-desc");
+    renderTable();
+  }
+
+  // ===== TABLE RENDER (AGORA COM COLUNA FINANCEIRA) =====
+  function renderTable(){
+    const q=normStr(el("tSearch").value).toLowerCase();
+    let rows=dataF.filter(x=>{
+      if(!q) return true;
+      return (x.especialidade||"").toLowerCase().includes(q) ||
+             (x.idade||"").toLowerCase().includes(q) ||
+             (x.mesLabel||x.mesRaw||"").toLowerCase().includes(q);
+    });
+
+    if(columnFilterValues.length > 0 && activeColumnFilter) {
+      if(activeColumnFilter === 'especialidade') rows = rows.filter(x => columnFilterValues.includes(x.especialidade));
+      else if(activeColumnFilter === 'idade') rows = rows.filter(x => columnFilterValues.includes(x.idade || "Não informado"));
+      else if(activeColumnFilter === 'mesKey') rows = rows.filter(x => columnFilterValues.includes(x.mesLabel || x.mesRaw));
+    }
+
+    if(tableSort.col){
+      const col=tableSort.col,dir=tableSort.dir==="asc"?1:-1;
+      rows=[...rows].sort((a,b)=>{
+        let va=a[col],vb=b[col];
+        if(col==="especialidade"||col==="idade"||col==="mesKey"){
+          va=String(va||"").toLowerCase(); vb=String(vb||"").toLowerCase();
+          return va.localeCompare(vb,"pt-BR")*dir;
+        } else if(col==="financeiro") {
+          // Para a coluna financeira, ordenar numericamente
+          return ((a.financeiro||0) - (b.financeiro||0)) * dir;
+        } else {
+          return ((va||0)-(vb||0))*dir;
+        }
+      });
+    }
+
+    el("tInfo").textContent=`${rows.length.toLocaleString("pt-BR")} registro(s)`;
+    const body=el("tBody");
+    if(!rows.length){
+      body.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`;
+      return;
+    }
+    body.innerHTML=rows.slice(0,2000).map(x=>`
+      <tr>
+        <td title="${x.especialidade}">${x.especialidade}</td>
+        <td>${x.idade||"Não informado"}</td>
+        <td>${x.mesLabel||x.mesRaw}</td>
+        <td>${x.agendado.toLocaleString("pt-BR")}</td>
+        <td>${x.recepcionado.toLocaleString("pt-BR")}</td>
+        <td>${x.apac.toLocaleString("pt-BR")}</td>
+        <td>${x.faturado.toLocaleString("pt-BR")}</td>
+        <td style="font-weight:800; color:${x.financeiro>0?'#059669':'#94a3b8'};">${x.financeiro>0?formatBRL(x.financeiro):'—'}</td>
+      </tr>`).join("");
+  }
+
+  // ===== EXPORT EXCEL =====
+  function exportExcel(){
+    if(!dataF.length){ toast("Sem dados para exportar com os filtros atuais.","error"); return; }
+    const wsData=[["ESPECIALIDADE","IDADE","MÊS/ANO","AGENDADO","RECEPCIONADO","APAC GERADAS","FATURADO","FINANCEIRO (R$)"],
+      ...dataF.map(x=>[x.especialidade,x.idade,x.mesLabel||x.mesRaw,x.agendado,x.recepcionado,x.apac,x.faturado,x.financeiro?x.financeiro.toFixed(2).replace('.',','):0])];
+    const wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(wsData);
+    ws["!cols"]=[{wch:44},{wch:18},{wch:12},{wch:12},{wch:14},{wch:12},{wch:12},{wch:18}];
+    XLSX.utils.book_append_sheet(wb,ws,"OCI");
+    const now=new Date(),stamp=now.toLocaleDateString("pt-BR").replaceAll("/","-");
+    XLSX.writeFile(wb,`OCI_${stamp}.xlsx`);
+    toast("Excel exportado com sucesso.","success");
+  }
+
+  // ===== TABS =====
+  function switchTab(id,btn){
+    document.querySelectorAll(".tabContent").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    el("tab-"+id).classList.add("active");
+    btn.classList.add("active");
+    setTimeout(()=>{ Object.values(charts).forEach(c=>c?.resize?.()); },80);
+  }
+
+  // ===== INIT =====
+  window.addEventListener("DOMContentLoaded",()=>{
+    loadData(false);
+    loadFinData(false);
+  });
+</script>
+</body>
+</html>
