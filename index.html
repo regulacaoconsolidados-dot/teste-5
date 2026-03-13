@@ -1227,6 +1227,19 @@
     });
   });
 
+  // ===== FUNÇÃO PARA RESUMIR NOMES DE ESPECIALIDADES =====
+  function resumirNomeEspecialidade(nome) {
+    if (!nome) return "";
+    return nome
+      .replace(/^OCI\s*/i, '')
+      .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, 'OFTALMO ')
+      .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, 'INVEST. CA ')
+      .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, 'PROG. CA ')
+      .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, 'DIAG/TERAP CA ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   // ===== MULTI-SELECT FUNCTIONS =====
   function toggleMsDropdown(e){
     e.stopPropagation();
@@ -2258,23 +2271,12 @@
         });
 
       const arr=[...map.entries()].map(([k,v])=>({idade:k,...v})).sort((a,b)=>idadeKey(a.idade)-idadeKey(b.idade));
-      function resumirNomeEspecialidade(nome) {
-  return nome
-    .replace(/^OCI\s*/i, '')
-    .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, 'OFTALMO ')
-    .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, 'INVEST. CA ')
-    .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, 'PROG. CA ')
-    .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, 'DIAG/TERAP CA ')
-    .replace(/\s+/g, ' ').trim();
-}
-
-charts["cTop"]=new Chart(ctx,{
-  type:"bar",
-  data:{labels:arr.map(x => resumirNomeEspecialidade(x.esp)), // <-- APENAS ESTA LINHA MUDA!
-        datasets:[
-    {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
-    {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
-  ]},
+      charts["cTop"]=new Chart(ctx,{
+        type:"bar",
+        data:{labels:arr.map(x=>x.idade),datasets:[
+          {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
+          {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
+        ]},
         options:{
           ...baseOptions(),
           indexAxis:"y",
@@ -2311,7 +2313,8 @@ charts["cTop"]=new Chart(ctx,{
 
     charts["cTop"]=new Chart(ctx,{
       type:"bar",
-      data:{labels:arr.map(x=>x.esp),datasets:[
+      data:{labels:arr.map(x => resumirNomeEspecialidade(x.esp)), // <-- RESUMO DOS NOMES AQUI
+            datasets:[
         {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
         {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
       ]},
@@ -2382,7 +2385,7 @@ charts["cTop"]=new Chart(ctx,{
     
     // Limitar a 15 itens para não poluir o gráfico
     const dadosLimitados = dadosArray.slice(0, 15);
-    const labels = dadosLimitados.map(d => d.esp);
+    const labels = dadosLimitados.map(d => resumirNomeEspecialidade(d.esp)); // <-- RESUMO DOS NOMES AQUI
     const valores = dadosLimitados.map(d => d.valor);
 
     charts["cReceita"] = new Chart(ctx, {
