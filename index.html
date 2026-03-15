@@ -242,15 +242,21 @@
       flex-wrap:wrap;
     }
     .grupo-selector {
-      flex:1;
-      min-width:200px;
+      flex:1.2;  /* Aumentei um pouco */
+      min-width:220px;
     }
     .subgrupo-container {
-      flex:2;
-      min-width:300px;
+      flex:3;  /* Aumentei bastante para caber os nomes completos */
+      min-width:450px;  /* Largura mínima maior */
     }
     .subgrupo-container .ms-trigger {
       background:linear-gradient(135deg, #f8fafc, #fff);
+      white-space: normal;  /* Permite quebra de linha se necessário */
+      min-height: 42px;
+    }
+    .mes-container {
+      flex:1;  /* Diminuí para dar mais espaço ao subgrupo */
+      min-width:180px;
     }
     .grupo-badge {
       display:inline-flex;
@@ -625,6 +631,10 @@
       .fin-header{flex-wrap:wrap;}
       .fin-header-right{width:100%;}
       .chart-filter-popup { right:auto; left:0; }
+      .grupo-selector, .subgrupo-container, .mes-container {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+      }
     }
     @media(max-width:560px){
       .kpis{grid-template-columns:1fr}
@@ -666,10 +676,10 @@
         <button class="btn-clear" id="btnClear"><i class="fa-solid fa-xmark"></i> Limpar</button>
       </div>
       <div class="filtersGrid">
-        <div class="fg">
-          <label><i class="fa-solid fa-layer-group"></i> Grupo</label>
+        <div class="fg" style="grid-column: span 12;">
           <div class="grupo-filter-container">
             <div class="grupo-selector">
+              <label><i class="fa-solid fa-layer-group"></i> GRUPO</label>
               <select id="grupoSelect" onchange="handleGrupoChange()">
                 <option value="">Todos os Grupos</option>
                 <option value="01">01 - Atenção em Oncologia</option>
@@ -681,9 +691,7 @@
               </select>
             </div>
             <div class="subgrupo-container" id="subgrupoContainer">
-              <div class="subgrupo-header">
-                <span><i class="fa-solid fa-code-branch"></i> Subgrupos com Códigos TUSS</span>
-              </div>
+              <label><i class="fa-solid fa-code-branch"></i> SUBGRUPOS COM CÓDIGOS TUSS</label>
               <div class="multiselect-wrapper" id="msWrapperSub">
                 <div class="ms-trigger" id="msTriggerSub" onclick="toggleMsDropdownSub(event)">
                   <span class="ms-label-text" id="msLabelSub">Todos os subgrupos</span>
@@ -697,28 +705,28 @@
                   <div class="ms-search-box">
                     <input type="text" id="msSearchSub" placeholder="Buscar por código ou nome…" oninput="filterMsListSub()" autocomplete="off"/>
                   </div>
-                  <div class="ms-list" id="msListSub"></div>
+                  <div class="ms-list" id="msListSub" style="max-height: 300px;"></div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="fg">
-          <label><i class="fa-solid fa-calendar-days"></i> Mês/Ano</label>
-          <div class="multiselect-wrapper" id="msWrapperMes">
-            <div class="ms-trigger" id="msTriggerMes" onclick="toggleMsDropdownMes(event)">
-              <span class="ms-label-text" id="msLabelMes">Todos</span>
-              <i class="fa-solid fa-chevron-down ms-arrow" id="msArrowMes"></i>
-            </div>
-            <div class="ms-dropdown" id="msDropdownMes">
-              <div class="ms-actions">
-                <button class="ms-btn-all" onclick="selectAllMes(event)"><i class="fa-solid fa-check-double"></i> Selecionar Todos</button>
-                <button class="ms-btn-clr" onclick="clearMesSelection(event)"><i class="fa-solid fa-xmark"></i> Limpar</button>
+            <div class="mes-container">
+              <label><i class="fa-solid fa-calendar-days"></i> MÊS/ANO</label>
+              <div class="multiselect-wrapper" id="msWrapperMes">
+                <div class="ms-trigger" id="msTriggerMes" onclick="toggleMsDropdownMes(event)">
+                  <span class="ms-label-text" id="msLabelMes">Todos</span>
+                  <i class="fa-solid fa-chevron-down ms-arrow" id="msArrowMes"></i>
+                </div>
+                <div class="ms-dropdown" id="msDropdownMes">
+                  <div class="ms-actions">
+                    <button class="ms-btn-all" onclick="selectAllMes(event)"><i class="fa-solid fa-check-double"></i> Selecionar Todos</button>
+                    <button class="ms-btn-clr" onclick="clearMesSelection(event)"><i class="fa-solid fa-xmark"></i> Limpar</button>
+                  </div>
+                  <div class="ms-search-box">
+                    <input type="text" id="msSearchMes" placeholder="Buscar mês…" oninput="filterMsListMes()" autocomplete="off"/>
+                  </div>
+                  <div class="ms-list" id="msListMes"></div>
+                </div>
               </div>
-              <div class="ms-search-box">
-                <input type="text" id="msSearchMes" placeholder="Buscar mês…" oninput="filterMsListMes()" autocomplete="off"/>
-              </div>
-              <div class="ms-list" id="msListMes"></div>
             </div>
           </div>
         </div>
@@ -855,7 +863,7 @@
             <div class="chartHead">
               <div>
                 <h3 id="titleEvolucao">Evolução Mensal (Agendado, Recepcionado, APAC, Faturado)</h3>
-                <div class="chartSub" id="subEvolucao">Selecione uma especialidade para detalhar • Mês/Ano = Todos mostra a linha do tempo completa</div>
+                <div class="chartSub" id="subEvolucao">Selecione filtros para detalhar</div>
               </div>
             </div>
             <div class="chartWrap" style="height:450px;">
@@ -864,13 +872,13 @@
           </div>
         </div>
 
-        <!-- PRIMEIRA LINHA DE GRÁFICOS: Top Especialidades e Receita Financeira (alinhados) -->
+        <!-- PRIMEIRA LINHA DE GRÁFICOS: Top Especialidades e Receita Financeira -->
         <div class="row2eq align-start" style="margin-top:14px;">
           <div class="chartCard">
             <div class="chartHead">
               <div>
                 <h3 id="titleTop">Top Especialidades (por Recepcionado e Faturado)</h3>
-                <div class="chartSub" id="subTop">Aparece quando Especialidade = Todas • Mostra todas as especialidades do período</div>
+                <div class="chartSub" id="subTop">Procedimentos com maior volume no período</div>
               </div>
             </div>
             <div id="cTopWrap" class="chartWrap" style="height:480px;">
@@ -882,7 +890,7 @@
             <div class="chartHead">
               <div>
                 <h3 id="titleReceita">Receita Financeira por Especialidade</h3>
-                <div class="chartSub" id="subReceita">Faturamento total (R$) por especialidade no período (dados da coluna 'Financeiro')</div>
+                <div class="chartSub" id="subReceita">Faturamento total (R$) por especialidade no período</div>
               </div>
             </div>
             <div class="chartWrap" style="height:480px;">
@@ -891,29 +899,21 @@
           </div>
         </div>
 
-        <!-- SEGUNDA LINHA DE GRÁFICOS: Distribuição e NOVO GRÁFICO DE COMPARAÇÃO -->
+        <!-- SEGUNDA LINHA DE GRÁFICOS: Apenas Distribuição (Comparativo removido) -->
         <div class="bottom-charts" style="margin-top:14px;">
           <div class="chartCard">
             <div class="chartHead">
               <div>
                 <h3><i class="fa-solid fa-chart-pie" style="color:#0f2f5f"></i> Distribuição no Período</h3>
-                <div class="chartSub">Participação percentual de cada métrica no total do período selecionado</div>
+                <div class="chartSub">Participação percentual de cada métrica no total</div>
               </div>
             </div>
             <div class="chartWrap" style="height:400px;">
               <canvas id="cDistribuicao"></canvas>
             </div>
           </div>
-          <div class="chartCard">
-            <div class="chartHead">
-              <div>
-                <h3><i class="fa-solid fa-chart-simple" style="color:#8b5cf6"></i> Comparativo: Agendados vs Faturados</h3>
-                <div class="chartSub">Relação entre agendamentos e faturamento por especialidade (top 10)</div>
-              </div>
-            </div>
-            <div class="chartWrap" style="height:400px;">
-              <canvas id="cComparativo"></canvas>
-            </div>
+          <div class="chartCard" style="visibility: hidden;">
+            <!-- Card invisível para manter o grid 2 colunas - espaço reservado para futuro gráfico -->
           </div>
         </div>
       </div>
@@ -1177,8 +1177,8 @@
 
   // ===== CONFIG =====
   const SHEET_ID = "1BONeij455aKawVr1iyskMLAJMKeBHzWmUZp_E-TDUWo";
-  const GID      = "2108990586";  // CONSOLIDADO OCI (COM COLUNA FINANCEIRA)
-  const GID_FIN  = "1538908139";  // FINANCEIRO
+  const GID      = "2108990586";
+  const GID_FIN  = "1538908139";
   const CSV_URL     = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
   const CSV_FIN_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_FIN}`;
 
@@ -1194,73 +1194,73 @@
     "out":{m:10,label:"Out"},"nov":{m:11,label:"Nov"},"dez":{m:12,label:"Dez"}
   };
 
-  // ===== GRUPOS E SUBGRUPOS =====
+  // ===== GRUPOS E SUBGRUPOS (com nomes completos) =====
   const GRUPOS = {
     "01": {
       nome: "01 - Atenção em Oncologia",
       subgrupos: [
-        { codigo: "09.01.01.001-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE MAMA", abrev: "CA Mama Inicial" },
-        { codigo: "09.01.01.002-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA", abrev: "CA Mama Progressão" },
-        { codigo: "09.01.01.003-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE PRÓSTATA", abrev: "CA Próstata Inicial" },
-        { codigo: "09.01.01.004-9", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE PRÓSTATA", abrev: "CA Próstata Progressão" },
-        { codigo: "09.01.01.005-7", nome: "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO", abrev: "CA Colo Investigação" },
-        { codigo: "09.01.01.006-5", nome: "OCI AVALIAÇÃO DIAGNOSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO", abrev: "CA Colo Terapêutica" },
-        { codigo: "09.01.01.007-3", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER GÁSTRICO", abrev: "CA Gástrico" },
-        { codigo: "09.01.01.008-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER COLORRETAL", abrev: "CA Colorretal" },
-        { codigo: "09.01.01.009-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA - I", abrev: "CA Mama Prog I" },
-        { codigo: "09.01.01.010-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA-II", abrev: "CA Mama Prog II" },
-        { codigo: "09.01.01.011-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-I", abrev: "CA Colo Terap I" },
-        { codigo: "09.01.01.012-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-II", abrev: "CA Colo Terap II" }
+        { codigo: "09.01.01.001-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE MAMA" },
+        { codigo: "09.01.01.002-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA" },
+        { codigo: "09.01.01.003-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE PRÓSTATA" },
+        { codigo: "09.01.01.004-9", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE PRÓSTATA" },
+        { codigo: "09.01.01.005-7", nome: "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO" },
+        { codigo: "09.01.01.006-5", nome: "OCI AVALIAÇÃO DIAGNOSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO" },
+        { codigo: "09.01.01.007-3", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER GÁSTRICO" },
+        { codigo: "09.01.01.008-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER COLORRETAL" },
+        { codigo: "09.01.01.009-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA - I" },
+        { codigo: "09.01.01.010-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA-II" },
+        { codigo: "09.01.01.011-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-I" },
+        { codigo: "09.01.01.012-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-II" }
       ]
     },
     "02": {
       nome: "02 - Atenção em Cardiologia",
       subgrupos: [
-        { codigo: "09.02.01.001-8", nome: "OCI AVALIAÇÃO DE RISCO CIRÚRGICO", abrev: "Risco Cirúrgico" },
-        { codigo: "09.02.01.002-6", nome: "OCI AVALIAÇÃO CARDIOLÓGICA", abrev: "Avaliação Cardio" },
-        { codigo: "09.02.01.003-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Inicial" },
-        { codigo: "09.02.01.004-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA I - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Prog I" },
-        { codigo: "09.02.01.005-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA II - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Prog II" },
-        { codigo: "09.02.01.006-9", nome: "OCI AVALIAÇÃO DIAGNÓSTICA - INSUFICIÊNCIA CARDÍACA", abrev: "Insuf Cardíaca" }
+        { codigo: "09.02.01.001-8", nome: "OCI AVALIAÇÃO DE RISCO CIRÚRGICO" },
+        { codigo: "09.02.01.002-6", nome: "OCI AVALIAÇÃO CARDIOLÓGICA" },
+        { codigo: "09.02.01.003-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL - SÍNDROME CORONARIANA CRÔNICA" },
+        { codigo: "09.02.01.004-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA I - SÍNDROME CORONARIANA CRÔNICA" },
+        { codigo: "09.02.01.005-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA II - SÍNDROME CORONARIANA CRÔNICA" },
+        { codigo: "09.02.01.006-9", nome: "OCI AVALIAÇÃO DIAGNÓSTICA - INSUFICIÊNCIA CARDÍACA" }
       ]
     },
     "03": {
       nome: "03 - Atenção em Ortopedia",
       subgrupos: [
-        { codigo: "09.03.01.001-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA", abrev: "Ortopedia RX" },
-        { codigo: "09.03.01.002-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E ULTRASSONOGRAFIA", abrev: "Ortopedia RX+US" },
-        { codigo: "09.03.01.003-8", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E TOMOGRAFIA COMPUTADORIZADA", abrev: "Ortopedia RX+TC" },
-        { codigo: "09.03.01.004-6", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E RESSONÂNCIA MAGNÉTICA", abrev: "Ortopedia RX+RM" }
+        { codigo: "09.03.01.001-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA" },
+        { codigo: "09.03.01.002-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E ULTRASSONOGRAFIA" },
+        { codigo: "09.03.01.003-8", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E TOMOGRAFIA COMPUTADORIZADA" },
+        { codigo: "09.03.01.004-6", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E RESSONÂNCIA MAGNÉTICA" }
       ]
     },
     "04": {
       nome: "04 - Atenção em Otorrinolaringologia",
       subgrupos: [
-        { codigo: "09.04.01.001-5", nome: "OCI AVALIAÇÃO INICIAL DIAGNÓSTICA DE DÉFICIT AUDITIVO", abrev: "Déficit Auditivo Inicial" },
-        { codigo: "09.04.01.002-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE DÉFICIT AUDITIVO", abrev: "Déficit Auditivo Prog" },
-        { codigo: "09.04.01.003-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE NASOFARINGE E DE OROFARINGE", abrev: "Naso/Orofaringe" }
+        { codigo: "09.04.01.001-5", nome: "OCI AVALIAÇÃO INICIAL DIAGNÓSTICA DE DÉFICIT AUDITIVO" },
+        { codigo: "09.04.01.002-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE DÉFICIT AUDITIVO" },
+        { codigo: "09.04.01.003-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE NASOFARINGE E DE OROFARINGE" }
       ]
     },
     "05": {
       nome: "05 - Atenção em Oftalmologia",
       subgrupos: [
-        { codigo: "09.05.01.001-9", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS", abrev: "Oftalmo 0-8a" },
-        { codigo: "09.05.01.002-7", nome: "OCI AVALIAÇÃO DE ESTRABISMO", abrev: "Estrabismo" },
-        { codigo: "09.05.01.003-5", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS", abrev: "Oftalmo 9a+" },
-        { codigo: "09.05.01.004-3", nome: "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA", abrev: "Retinopatia Diab" },
-        { codigo: "09.05.01.005-1", nome: "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA", abrev: "Onco Oftalmo" },
-        { codigo: "09.05.01.006-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA", abrev: "Neuro Oftalmo" },
-        { codigo: "09.05.01.007-8", nome: "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO", abrev: "Exames c/ Sedação" }
+        { codigo: "09.05.01.001-9", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS" },
+        { codigo: "09.05.01.002-7", nome: "OCI AVALIAÇÃO DE ESTRABISMO" },
+        { codigo: "09.05.01.003-5", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS" },
+        { codigo: "09.05.01.004-3", nome: "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA" },
+        { codigo: "09.05.01.005-1", nome: "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA" },
+        { codigo: "09.05.01.006-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA" },
+        { codigo: "09.05.01.007-8", nome: "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO" }
       ]
     },
     "06": {
       nome: "06 - Atenção em Saúde da Mulher",
       subgrupos: [
-        { codigo: "09.06.01.001-2", nome: "GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) I", abrev: "GIN1-I" },
-        { codigo: "09.06.01.002-0", nome: "OCI - GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) II", abrev: "GIN1-II" },
-        { codigo: "09.06.01.003-9", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA) - SANGRAMENTO UTERINO ANORMAL I", abrev: "GIN2 SUA-I" },
-        { codigo: "09.06.01.004-7", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- SANGRAMENTO UTERINO ANORMAL II", abrev: "GIN2 SUA-II" },
-        { codigo: "09.06.01.005-5", nome: "OCI - GIN3 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- ENDOMETRIOSE PROFUNDA- CASOS COMPLEXOS E PROGRAMAÇÃO CIRÚRGICA", abrev: "GIN3 Endometriose" }
+        { codigo: "09.06.01.001-2", nome: "GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) I" },
+        { codigo: "09.06.01.002-0", nome: "OCI - GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) II" },
+        { codigo: "09.06.01.003-9", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA) - SANGRAMENTO UTERINO ANORMAL I" },
+        { codigo: "09.06.01.004-7", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- SANGRAMENTO UTERINO ANORMAL II" },
+        { codigo: "09.06.01.005-5", nome: "OCI - GIN3 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- ENDOMETRIOSE PROFUNDA- CASOS COMPLEXOS E PROGRAMAÇÃO CIRÚRGICA" }
       ]
     }
   };
@@ -1337,12 +1337,9 @@
   // ===== GRUPO/SUBGRUPO FUNCTIONS =====
   function handleGrupoChange() {
     const grupoSelect = el("grupoSelect");
-    const grupo = grupoSelect.value;
+    const grupo = grupoSelect ? grupoSelect.value : "";
     
-    // Limpar seleção anterior
     selectedSubgrupos.clear();
-    
-    // Construir lista de subgrupos
     buildSubgrupoList(grupo);
     updateMsLabelSub();
     applyFilters();
@@ -1358,7 +1355,6 @@
     if (grupo && GRUPOS[grupo]) {
       subgrupos = GRUPOS[grupo].subgrupos;
     } else {
-      // Se "Todos os Grupos", mostrar todos os subgrupos de todos os grupos
       Object.values(GRUPOS).forEach(g => {
         subgrupos = subgrupos.concat(g.subgrupos);
       });
@@ -1493,7 +1489,7 @@
     
     const n = selectedSubgrupos.size;
     const grupoSelect = el("grupoSelect");
-    const grupo = grupoSelect?.value;
+    const grupo = grupoSelect ? grupoSelect.value : "";
     
     let total = 0;
     if (grupo && GRUPOS[grupo]) {
@@ -1505,15 +1501,14 @@
     if (n === 0 || n === total) {
       lbl.textContent = "Todos os subgrupos";
     } else if (n === 1) {
-      // Encontrar o nome abreviado do subgrupo selecionado
       const codigo = selectedSubgrupos.values().next().value;
-      let encontrado = null;
+      let nomeEncontrado = null;
       Object.values(GRUPOS).forEach(g => {
         g.subgrupos.forEach(s => {
-          if (s.codigo === codigo) encontrado = s.abrev;
+          if (s.codigo === codigo) nomeEncontrado = s.nome;
         });
       });
-      lbl.textContent = encontrado || "1 selecionado";
+      lbl.textContent = nomeEncontrado ? nomeEncontrado.substring(0, 60) + "..." : "1 selecionado";
     } else {
       lbl.textContent = `${n} subgrupos selecionados`;
     }
@@ -1664,33 +1659,25 @@
   }
 
   // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES =====
-  function abbreviateEspName(esp, maxLength = 25) {
+  function abbreviateEspName(esp, maxLength = 30) {
     if (!esp) return "";
     
     // Primeiro, verificar se é um código/subgrupo que temos mapeado
     for (const grupo of Object.values(GRUPOS)) {
       for (const sub of grupo.subgrupos) {
-        if (esp.includes(sub.codigo) || esp.includes(sub.nome)) {
-          return sub.abrev;
+        if (esp.includes(sub.codigo)) {
+          // Se encontrar pelo código, extrair a parte final relevante
+          const partes = sub.nome.split(' - ');
+          if (partes.length > 1) {
+            return partes[partes.length - 1].substring(0, maxLength);
+          }
+          return sub.nome.substring(0, maxLength);
         }
       }
     }
     
-    // Se não encontrou no mapeamento, fazer abreviação automática
     if (esp.length <= maxLength) return esp;
-    
-    let abbr = esp
-      .replace(/^OCI\s*/i, "")
-      .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, "OFTALMO ")
-      .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, "INVEST. CA ")
-      .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, "PROG. CA ")
-      .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, "DIAG/TERAP CA ")
-      .replace(/AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, "DIAG. CA ")
-      .replace(/TRATAMENTO DE CANCER DE\s*/i, "TRAT. CA ")
-      .replace(/\s+/g, " ").trim();
-    
-    if (abbr.length <= maxLength) return abbr;
-    return abbr.substring(0, maxLength - 3) + "...";
+    return esp.substring(0, maxLength - 3) + "...";
   }
 
   // ===== FILTER POPUP FUNCTIONS =====
@@ -1708,13 +1695,13 @@
   function applyTopEspFilter() {
     topEspFilterMonth = el("topEspMesSelect")?.value || "";
     if(el("topEspFilter")) el("topEspFilter").classList.remove('show');
-    buildTop(getActiveEsp(), topEspFilterMonth || null);
+    buildTop(topEspFilterMonth || null);
   }
   function clearTopEspFilter() {
     topEspFilterMonth = "";
     if(el("topEspMesSelect")) el("topEspMesSelect").value = "";
     if(el("topEspFilter")) el("topEspFilter").classList.remove('show');
-    buildTop(getActiveEsp(), null);
+    buildTop(null);
   }
 
   function applyIndicadoresFilter(){
@@ -2427,7 +2414,6 @@
     buildMsListMes(); 
     updateMsLabelMes();
     
-    // Inicializar subgrupos com todos os grupos
     buildSubgrupoList("");
     updateMsLabelSub();
   }
@@ -2464,7 +2450,6 @@
     }
     
     dataF = allData.filter(x=>{
-      // Filtro por subgrupo (código TUSS)
       if(selectedSubgrupos.size > 0) {
         let found = false;
         for (const codigo of selectedSubgrupos) {
@@ -2476,7 +2461,6 @@
         if (!found) return false;
       }
       
-      // Filtro por mês
       if(selectedMeses.size>0 && selectedMeses.size<allMeses.length){
         if(!selectedMeses.has(x.mesKey)) return false;
       }
@@ -2519,13 +2503,11 @@
       }
     };
   }
-  function getActiveEsp(){ return ""; } // Não usado mais
   function labelMes(key){ const found=allData.find(x=>x.mesKey===key); return found?found.mesLabel:key; }
 
   function getOciDataForMonth(monthKey){
     if(!monthKey) return dataF;
     return allData.filter(x=>{
-      // Filtro por subgrupo (código TUSS)
       if(selectedSubgrupos.size > 0) {
         let found = false;
         for (const codigo of selectedSubgrupos) {
@@ -2545,7 +2527,7 @@
     if(!allData || !allData.length) return;
     
     buildEvolucao();
-    buildTop(getActiveEsp(), topEspFilterMonth);
+    buildTop(topEspFilterMonth);
     
     const indMes = indicadoresFilterMonth;
     buildGaugeFatRec(indMes);
@@ -2553,7 +2535,6 @@
 
     buildReceita();  
     buildDistribuicao(); 
-    buildComparativo();
 
     const mesLabels = selectedMeses.size === 1 ? `Mês: ${labelMes([...selectedMeses][0])}` : 
                       selectedMeses.size > 1 ? `${selectedMeses.size} meses selecionados` : 
@@ -2641,7 +2622,6 @@
     const ctx=canvas.getContext("2d");
     
     let source = allData.filter(x=>{
-      // Filtro por subgrupo (código TUSS)
       if(selectedSubgrupos.size > 0) {
         let found = false;
         for (const codigo of selectedSubgrupos) {
@@ -2709,7 +2689,7 @@
   }
 
   // ===== CHART: Top Especialidades =====
-  function buildTop(esp,mes){
+  function buildTop(mes){
     destroy("cTop");
     const canvas = el("cTop");
     if(!canvas) return;
@@ -2732,7 +2712,7 @@
 
     charts["cTop"]=new Chart(ctx,{
       type:"bar",
-      data:{labels:arr.map(x=>abbreviateEspName(x.esp, 25)),datasets:[
+      data:{labels:arr.map(x=>abbreviateEspName(x.esp, 30)),datasets:[
         {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
         {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
       ]},
@@ -2799,7 +2779,7 @@
                               .sort((a, b) => b.valor - a.valor);
     
     const dadosLimitados = dadosArray.slice(0, 15);
-    const labels = dadosLimitados.map(d => abbreviateEspName(d.esp, 25));
+    const labels = dadosLimitados.map(d => abbreviateEspName(d.esp, 30));
     const valores = dadosLimitados.map(d => d.valor);
 
     charts["cReceita"] = new Chart(ctx, {
@@ -2862,7 +2842,7 @@
 
     if(el("subReceita")) el("subReceita").textContent = mesFiltro && mesFiltro !== ""
       ? `Faturamento (R$) por especialidade • Mês: ${labelMes(mesFiltro)}`
-      : "Faturamento total (R$) acumulado por especialidade (dados da coluna 'Financeiro')";
+      : "Faturamento total (R$) acumulado por especialidade";
   }
 
   // ===== GRÁFICO: Distribuição no Período =====
@@ -2959,114 +2939,6 @@
                 return ` ${label}: ${value.toLocaleString("pt-BR")} (${pct}%)`;
               }
             }
-          }
-        }
-      }
-    });
-  }
-
-  // ===== NOVO GRÁFICO: Comparativo Agendados vs Faturados =====
-  function buildComparativo(){
-    destroy("cComparativo");
-    const canvas = el("cComparativo");
-    if(!canvas) return;
-    const ctx=canvas.getContext("2d");
-
-    const mapEsp = new Map();
-    dataF.forEach(item => {
-      const esp = item.especialidade;
-      if (!esp) return;
-      
-      if (!mapEsp.has(esp)) {
-        mapEsp.set(esp, { agendado: 0, faturado: 0 });
-      }
-      const o = mapEsp.get(esp);
-      o.agendado += item.agendado;
-      o.faturado += item.faturado;
-    });
-
-    if (mapEsp.size === 0) {
-      ctx.font = "14px Inter";
-      ctx.fillStyle = "#64748b";
-      ctx.textAlign = "center";
-      ctx.fillText("Sem dados para o período selecionado", ctx.canvas.width/2, ctx.canvas.height/2);
-      return;
-    }
-
-    const dadosArray = Array.from(mapEsp, ([esp, {agendado, faturado}]) => ({
-      esp,
-      agendado,
-      faturado,
-      taxa: agendado > 0 ? (faturado / agendado) * 100 : 0
-    }))
-    .sort((a, b) => b.agendado - a.agendado)
-    .slice(0, 10);
-
-    charts["cComparativo"] = new Chart(ctx, {
-      type: "radar",
-      data: {
-        labels: dadosArray.map(d => abbreviateEspName(d.esp, 15)),
-        datasets: [
-          {
-            label: "Agendados",
-            data: dadosArray.map(d => d.agendado),
-            backgroundColor: "rgba(59, 130, 246, 0.2)",
-            borderColor: "#3b82f6",
-            pointBackgroundColor: "#3b82f6",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "#3b82f6",
-            borderWidth: 2
-          },
-          {
-            label: "Faturados",
-            data: dadosArray.map(d => d.faturado),
-            backgroundColor: "rgba(185, 28, 28, 0.2)",
-            borderColor: "#b91c1c",
-            pointBackgroundColor: "#b91c1c",
-            pointBorderColor: "#fff",
-            pointHoverBackgroundColor: "#fff",
-            pointHoverBorderColor: "#b91c1c",
-            borderWidth: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              font: { size: 12, weight: "700" },
-              usePointStyle: true,
-              pointStyle: "circle"
-            }
-          },
-          tooltip: {
-            callbacks: {
-              title: (items) => {
-                const i = items[0]?.dataIndex;
-                return i !== undefined ? dadosArray[i]?.esp || "" : "";
-              },
-              label: (ctx) => {
-                const val = ctx.raw || 0;
-                return ` ${ctx.dataset.label}: ${val.toLocaleString("pt-BR")}`;
-              }
-            }
-          },
-          datalabels: {
-            display: false
-          }
-        },
-        scales: {
-          r: {
-            beginAtZero: true,
-            ticks: {
-              font: { size: 10, weight: "700" },
-              callback: (v) => v.toLocaleString("pt-BR")
-            },
-            grid: { color: "rgba(2,6,23,.1)" }
           }
         }
       }
