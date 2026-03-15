@@ -234,6 +234,56 @@
     .ms-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .ms-empty{padding:12px 14px;color:var(--muted);font-size:12px;font-weight:700;text-align:center;}
 
+    /* ===== GRUPO FILTER ===== */
+    .grupo-filter-container {
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .grupo-selector {
+      flex:1;
+      min-width:200px;
+    }
+    .subgrupo-container {
+      flex:2;
+      min-width:300px;
+    }
+    .subgrupo-container .ms-trigger {
+      background:linear-gradient(135deg, #f8fafc, #fff);
+    }
+    .grupo-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:rgba(15,47,95,.08);
+      border:1px solid rgba(15,47,95,.15);
+      font-size:11px;
+      font-weight:700;
+      color:var(--primary2);
+      margin-right:8px;
+    }
+    .grupo-badge i {
+      font-size:10px;
+      color:var(--success);
+    }
+    .subgrupo-header {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+    }
+    .subgrupo-header span {
+      background:rgba(100,116,139,.1);
+      padding:4px 10px;
+      border-radius:999px;
+    }
+
     /* KPI */
     .kpis{
       display:grid;
@@ -617,27 +667,60 @@
       </div>
       <div class="filtersGrid">
         <div class="fg">
-          <label><i class="fa-solid fa-stethoscope"></i> Especialidade</label>
-          <div class="multiselect-wrapper" id="msWrapper">
-            <div class="ms-trigger" id="msTrigger" onclick="toggleMsDropdown(event)">
-              <span class="ms-label-text" id="msLabel">Todas</span>
-              <i class="fa-solid fa-chevron-down ms-arrow" id="msArrow"></i>
+          <label><i class="fa-solid fa-layer-group"></i> Grupo</label>
+          <div class="grupo-filter-container">
+            <div class="grupo-selector">
+              <select id="grupoSelect" onchange="handleGrupoChange()">
+                <option value="">Todos os Grupos</option>
+                <option value="01">01 - Atenção em Oncologia</option>
+                <option value="02">02 - Atenção em Cardiologia</option>
+                <option value="03">03 - Atenção em Ortopedia</option>
+                <option value="04">04 - Atenção em Otorrinolaringologia</option>
+                <option value="05">05 - Atenção em Oftalmologia</option>
+                <option value="06">06 - Atenção em Saúde da Mulher</option>
+              </select>
             </div>
-            <div class="ms-dropdown" id="msDropdown">
-              <div class="ms-actions">
-                <button class="ms-btn-all" onclick="selectAllEsp(event)"><i class="fa-solid fa-check-double"></i> Selecionar Todas</button>
-                <button class="ms-btn-clr" onclick="clearEspSelection(event)"><i class="fa-solid fa-xmark"></i> Limpar</button>
+            <div class="subgrupo-container" id="subgrupoContainer">
+              <div class="subgrupo-header">
+                <span><i class="fa-solid fa-code-branch"></i> Subgrupos com Códigos TUSS</span>
               </div>
-              <div class="ms-search-box">
-                <input type="text" id="msSearch" placeholder="Buscar especialidade…" oninput="filterMsList()" autocomplete="off"/>
+              <div class="multiselect-wrapper" id="msWrapperSub">
+                <div class="ms-trigger" id="msTriggerSub" onclick="toggleMsDropdownSub(event)">
+                  <span class="ms-label-text" id="msLabelSub">Todos os subgrupos</span>
+                  <i class="fa-solid fa-chevron-down ms-arrow" id="msArrowSub"></i>
+                </div>
+                <div class="ms-dropdown" id="msDropdownSub">
+                  <div class="ms-actions">
+                    <button class="ms-btn-all" onclick="selectAllSub(event)"><i class="fa-solid fa-check-double"></i> Selecionar Todos</button>
+                    <button class="ms-btn-clr" onclick="clearSubSelection(event)"><i class="fa-solid fa-xmark"></i> Limpar</button>
+                  </div>
+                  <div class="ms-search-box">
+                    <input type="text" id="msSearchSub" placeholder="Buscar por código ou nome…" oninput="filterMsListSub()" autocomplete="off"/>
+                  </div>
+                  <div class="ms-list" id="msListSub"></div>
+                </div>
               </div>
-              <div class="ms-list" id="msList"></div>
             </div>
           </div>
         </div>
         <div class="fg">
           <label><i class="fa-solid fa-calendar-days"></i> Mês/Ano</label>
-          <select id="fMesAno"><option value="">Todos</option></select>
+          <div class="multiselect-wrapper" id="msWrapperMes">
+            <div class="ms-trigger" id="msTriggerMes" onclick="toggleMsDropdownMes(event)">
+              <span class="ms-label-text" id="msLabelMes">Todos</span>
+              <i class="fa-solid fa-chevron-down ms-arrow" id="msArrowMes"></i>
+            </div>
+            <div class="ms-dropdown" id="msDropdownMes">
+              <div class="ms-actions">
+                <button class="ms-btn-all" onclick="selectAllMes(event)"><i class="fa-solid fa-check-double"></i> Selecionar Todos</button>
+                <button class="ms-btn-clr" onclick="clearMesSelection(event)"><i class="fa-solid fa-xmark"></i> Limpar</button>
+              </div>
+              <div class="ms-search-box">
+                <input type="text" id="msSearchMes" placeholder="Buscar mês…" oninput="filterMsListMes()" autocomplete="off"/>
+              </div>
+              <div class="ms-list" id="msListMes"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -693,22 +776,6 @@
             <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent)"></i>
             Indicadores (adaptam conforme o filtro)
           </span>
-
-          <!-- filtro por mês (aplica às duas gauges) -->
-          <div class="chart-filter-wrapper" style="margin-left:auto;">
-            <div class="chart-filter-badge" onclick="toggleChartFilter('indicadoresFilter', event)">
-              <i class="fa-solid fa-filter"></i> Filtrar por mês
-            </div>
-            <div id="indicadoresFilter" class="chart-filter-popup">
-              <select id="indicadoresMesSelect">
-                <option value="">Todos os meses</option>
-              </select>
-              <div class="filter-actions">
-                <button class="btn-filter-apply" onclick="applyIndicadoresFilter()">Aplicar</button>
-                <button class="btn-filter-clear" onclick="clearIndicadoresFilter()">Limpar</button>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="row2eq" style="margin-bottom:14px;">
@@ -791,7 +858,6 @@
                 <div class="chartSub" id="subEvolucao">Selecione uma especialidade para detalhar • Mês/Ano = Todos mostra a linha do tempo completa</div>
               </div>
             </div>
-            <!-- Altura aumentada para 450px e legenda ajustada -->
             <div class="chartWrap" style="height:450px;">
               <canvas id="cEvolucao"></canvas>
             </div>
@@ -806,46 +872,17 @@
                 <h3 id="titleTop">Top Especialidades (por Recepcionado e Faturado)</h3>
                 <div class="chartSub" id="subTop">Aparece quando Especialidade = Todas • Mostra todas as especialidades do período</div>
               </div>
-              <div class="chart-filter-wrapper">
-                <div class="chart-filter-badge" onclick="toggleChartFilter('topEspFilter', event)">
-                  <i class="fa-solid fa-filter"></i> Filtrar por mês
-                </div>
-                <div id="topEspFilter" class="chart-filter-popup">
-                  <select id="topEspMesSelect">
-                    <option value="">Todos os meses</option>
-                  </select>
-                  <div class="filter-actions">
-                    <button class="btn-filter-apply" onclick="applyTopEspFilter()">Aplicar</button>
-                    <button class="btn-filter-clear" onclick="clearTopEspFilter()">Limpar</button>
-                  </div>
-                </div>
-              </div>
             </div>
             <div id="cTopWrap" class="chartWrap" style="height:480px;">
               <canvas id="cTop"></canvas>
             </div>
           </div>
 
-          <!-- GRÁFICO DE RECEITA (agora em verde e com dados corrigidos) -->
           <div class="chartCard">
             <div class="chartHead">
               <div>
                 <h3 id="titleReceita">Receita Financeira por Especialidade</h3>
                 <div class="chartSub" id="subReceita">Faturamento total (R$) por especialidade no período (dados da coluna 'Financeiro')</div>
-              </div>
-              <div class="chart-filter-wrapper">
-                <div class="chart-filter-badge" onclick="toggleChartFilter('receitaFilter', event)">
-                  <i class="fa-solid fa-filter"></i> Filtrar por mês
-                </div>
-                <div id="receitaFilter" class="chart-filter-popup">
-                  <select id="receitaMesSelect">
-                    <option value="">Todos os meses</option>
-                  </select>
-                  <div class="filter-actions">
-                    <button class="btn-filter-apply" onclick="applyReceitaFilter()">Aplicar</button>
-                    <button class="btn-filter-clear" onclick="clearReceitaFilter()">Limpar</button>
-                  </div>
-                </div>
               </div>
             </div>
             <div class="chartWrap" style="height:480px;">
@@ -854,7 +891,7 @@
           </div>
         </div>
 
-        <!-- SEGUNDA LINHA DE GRÁFICOS: Apenas Distribuição no Período -->
+        <!-- SEGUNDA LINHA DE GRÁFICOS: Distribuição e NOVO GRÁFICO DE COMPARAÇÃO -->
         <div class="bottom-charts" style="margin-top:14px;">
           <div class="chartCard">
             <div class="chartHead">
@@ -862,27 +899,21 @@
                 <h3><i class="fa-solid fa-chart-pie" style="color:#0f2f5f"></i> Distribuição no Período</h3>
                 <div class="chartSub">Participação percentual de cada métrica no total do período selecionado</div>
               </div>
-              <div class="chart-filter-wrapper">
-                <div class="chart-filter-badge" onclick="toggleChartFilter('distribuicaoFilter', event)">
-                  <i class="fa-solid fa-filter"></i> Filtrar por mês
-                </div>
-                <div id="distribuicaoFilter" class="chart-filter-popup">
-                  <select id="distribuicaoMesSelect">
-                    <option value="">Todos os meses</option>
-                  </select>
-                  <div class="filter-actions">
-                    <button class="btn-filter-apply" onclick="applyDistribuicaoFilter()">Aplicar</button>
-                    <button class="btn-filter-clear" onclick="clearDistribuicaoFilter()">Limpar</button>
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="chartWrap" style="height:400px;">
               <canvas id="cDistribuicao"></canvas>
             </div>
           </div>
-          <div class="chartCard" style="visibility:hidden;">
-            <!-- Card invisível para manter o grid 2 colunas -->
+          <div class="chartCard">
+            <div class="chartHead">
+              <div>
+                <h3><i class="fa-solid fa-chart-simple" style="color:#8b5cf6"></i> Comparativo: Agendados vs Faturados</h3>
+                <div class="chartSub">Relação entre agendamentos e faturamento por especialidade (top 10)</div>
+              </div>
+            </div>
+            <div class="chartWrap" style="height:400px;">
+              <canvas id="cComparativo"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -952,7 +983,6 @@
                   </div>
                   <span class="sort-icon"></span>
                 </th>
-                <!-- NOVA COLUNA FINANCEIRA -->
                 <th data-col="financeiro" onclick="sortTable('financeiro', this)">
                   <div class="th-filter-wrapper">
                     <span>Financeiro (R$)</span>
@@ -1155,7 +1185,7 @@
   // ===== FINANCIAL CONSTANTS =====
   const FIN_COLORS = [
     "#0f2f5f","#1a3a6b","#2a5298","#3b82f6",
-    "#059669","#d97706","#8b5cf6","#b91c1c"
+    "#059669","#d97706","#8b5cf6","#b91c1c","#0ea5e9","#7c3aed","#b45309","#be123c"
   ];
   const FIN_MONTH_MAP = {
     "jan":{m:1,label:"Jan"},"fev":{m:2,label:"Fev"},"mar":{m:3,label:"Mar"},
@@ -1164,12 +1194,84 @@
     "out":{m:10,label:"Out"},"nov":{m:11,label:"Nov"},"dez":{m:12,label:"Dez"}
   };
 
+  // ===== GRUPOS E SUBGRUPOS =====
+  const GRUPOS = {
+    "01": {
+      nome: "01 - Atenção em Oncologia",
+      subgrupos: [
+        { codigo: "09.01.01.001-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE MAMA", abrev: "CA Mama Inicial" },
+        { codigo: "09.01.01.002-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA", abrev: "CA Mama Progressão" },
+        { codigo: "09.01.01.003-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE PRÓSTATA", abrev: "CA Próstata Inicial" },
+        { codigo: "09.01.01.004-9", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE PRÓSTATA", abrev: "CA Próstata Progressão" },
+        { codigo: "09.01.01.005-7", nome: "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO", abrev: "CA Colo Investigação" },
+        { codigo: "09.01.01.006-5", nome: "OCI AVALIAÇÃO DIAGNOSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO", abrev: "CA Colo Terapêutica" },
+        { codigo: "09.01.01.007-3", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER GÁSTRICO", abrev: "CA Gástrico" },
+        { codigo: "09.01.01.008-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER COLORRETAL", abrev: "CA Colorretal" },
+        { codigo: "09.01.01.009-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA - I", abrev: "CA Mama Prog I" },
+        { codigo: "09.01.01.010-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA-II", abrev: "CA Mama Prog II" },
+        { codigo: "09.01.01.011-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-I", abrev: "CA Colo Terap I" },
+        { codigo: "09.01.01.012-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-II", abrev: "CA Colo Terap II" }
+      ]
+    },
+    "02": {
+      nome: "02 - Atenção em Cardiologia",
+      subgrupos: [
+        { codigo: "09.02.01.001-8", nome: "OCI AVALIAÇÃO DE RISCO CIRÚRGICO", abrev: "Risco Cirúrgico" },
+        { codigo: "09.02.01.002-6", nome: "OCI AVALIAÇÃO CARDIOLÓGICA", abrev: "Avaliação Cardio" },
+        { codigo: "09.02.01.003-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Inicial" },
+        { codigo: "09.02.01.004-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA I - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Prog I" },
+        { codigo: "09.02.01.005-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA II - SÍNDROME CORONARIANA CRÔNICA", abrev: "SCC Prog II" },
+        { codigo: "09.02.01.006-9", nome: "OCI AVALIAÇÃO DIAGNÓSTICA - INSUFICIÊNCIA CARDÍACA", abrev: "Insuf Cardíaca" }
+      ]
+    },
+    "03": {
+      nome: "03 - Atenção em Ortopedia",
+      subgrupos: [
+        { codigo: "09.03.01.001-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA", abrev: "Ortopedia RX" },
+        { codigo: "09.03.01.002-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E ULTRASSONOGRAFIA", abrev: "Ortopedia RX+US" },
+        { codigo: "09.03.01.003-8", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E TOMOGRAFIA COMPUTADORIZADA", abrev: "Ortopedia RX+TC" },
+        { codigo: "09.03.01.004-6", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E RESSONÂNCIA MAGNÉTICA", abrev: "Ortopedia RX+RM" }
+      ]
+    },
+    "04": {
+      nome: "04 - Atenção em Otorrinolaringologia",
+      subgrupos: [
+        { codigo: "09.04.01.001-5", nome: "OCI AVALIAÇÃO INICIAL DIAGNÓSTICA DE DÉFICIT AUDITIVO", abrev: "Déficit Auditivo Inicial" },
+        { codigo: "09.04.01.002-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE DÉFICIT AUDITIVO", abrev: "Déficit Auditivo Prog" },
+        { codigo: "09.04.01.003-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE NASOFARINGE E DE OROFARINGE", abrev: "Naso/Orofaringe" }
+      ]
+    },
+    "05": {
+      nome: "05 - Atenção em Oftalmologia",
+      subgrupos: [
+        { codigo: "09.05.01.001-9", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS", abrev: "Oftalmo 0-8a" },
+        { codigo: "09.05.01.002-7", nome: "OCI AVALIAÇÃO DE ESTRABISMO", abrev: "Estrabismo" },
+        { codigo: "09.05.01.003-5", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS", abrev: "Oftalmo 9a+" },
+        { codigo: "09.05.01.004-3", nome: "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA", abrev: "Retinopatia Diab" },
+        { codigo: "09.05.01.005-1", nome: "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA", abrev: "Onco Oftalmo" },
+        { codigo: "09.05.01.006-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA", abrev: "Neuro Oftalmo" },
+        { codigo: "09.05.01.007-8", nome: "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO", abrev: "Exames c/ Sedação" }
+      ]
+    },
+    "06": {
+      nome: "06 - Atenção em Saúde da Mulher",
+      subgrupos: [
+        { codigo: "09.06.01.001-2", nome: "GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) I", abrev: "GIN1-I" },
+        { codigo: "09.06.01.002-0", nome: "OCI - GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) II", abrev: "GIN1-II" },
+        { codigo: "09.06.01.003-9", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA) - SANGRAMENTO UTERINO ANORMAL I", abrev: "GIN2 SUA-I" },
+        { codigo: "09.06.01.004-7", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- SANGRAMENTO UTERINO ANORMAL II", abrev: "GIN2 SUA-II" },
+        { codigo: "09.06.01.005-5", nome: "OCI - GIN3 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- ENDOMETRIOSE PROFUNDA- CASOS COMPLEXOS E PROGRAMAÇÃO CIRÚRGICA", abrev: "GIN3 Endometriose" }
+      ]
+    }
+  };
+
   // ===== STATE =====
   let allData = [];
   let dataF   = [];
   let tableSort = { col: null, dir: "asc" };
-  let selectedEspecialidades = new Set();
-  let allEspecialidades = [];
+  let selectedSubgrupos = new Set();
+  let selectedMeses = new Set();
+  let allMeses = [];
 
   // Chart filter states
   let topEspFilterMonth = "";
@@ -1200,15 +1302,20 @@
 
   const el = (id) => document.getElementById(id);
 
-  el("btnRefresh").addEventListener("click", () => { loadData(true); loadFinData(true); });
-  el("btnExcel").addEventListener("click", exportExcel);
-  el("btnClear").addEventListener("click", clearFilters);
-  el("fMesAno").addEventListener("change", applyFilters);
-  el("tSearch").addEventListener("input", renderTable);
+  // ===== EVENT LISTENERS =====
+  function initEventListeners() {
+    el("btnRefresh").addEventListener("click", () => { loadData(true); loadFinData(true); });
+    el("btnExcel").addEventListener("click", exportExcel);
+    el("btnClear").addEventListener("click", clearFilters);
+    el("tSearch").addEventListener("input", renderTable);
+  }
 
   document.addEventListener("click", function(e){
-    const wrapper = el("msWrapper");
-    if(wrapper && !wrapper.contains(e.target)) closeMsDropdown();
+    const wrapper = el("msWrapperSub");
+    if(wrapper && !wrapper.contains(e.target)) closeMsDropdownSub();
+    
+    const wrapperMes = el("msWrapperMes");
+    if(wrapperMes && !wrapperMes.contains(e.target)) closeMsDropdownMes();
 
     const colFilter = el("columnFilterPopup");
     if(colFilter && !colFilter.contains(e.target) && !e.target.closest('.th-filter-icon')) {
@@ -1227,57 +1334,290 @@
     });
   });
 
-  // ===== FUNÇÃO PARA RESUMIR NOMES DE ESPECIALIDADES =====
-  function resumirNomeEspecialidade(nome) {
-    if (!nome) return "";
-    return nome
-      .replace(/^OCI\s*/i, '')
-      .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, 'OFTALMO ')
-      .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, 'INVEST. CA ')
-      .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, 'PROG. CA ')
-      .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, 'DIAG/TERAP CA ')
-      .replace(/\s+/g, ' ')
-      .trim();
+  // ===== GRUPO/SUBGRUPO FUNCTIONS =====
+  function handleGrupoChange() {
+    const grupoSelect = el("grupoSelect");
+    const grupo = grupoSelect.value;
+    
+    // Limpar seleção anterior
+    selectedSubgrupos.clear();
+    
+    // Construir lista de subgrupos
+    buildSubgrupoList(grupo);
+    updateMsLabelSub();
+    applyFilters();
   }
 
-  // ===== MULTI-SELECT FUNCTIONS =====
-  function toggleMsDropdown(e){
+  function buildSubgrupoList(grupo) {
+    const list = el("msListSub");
+    if (!list) return;
+    
+    list.innerHTML = "";
+    
+    let subgrupos = [];
+    if (grupo && GRUPOS[grupo]) {
+      subgrupos = GRUPOS[grupo].subgrupos;
+    } else {
+      // Se "Todos os Grupos", mostrar todos os subgrupos de todos os grupos
+      Object.values(GRUPOS).forEach(g => {
+        subgrupos = subgrupos.concat(g.subgrupos);
+      });
+    }
+    
+    if (!subgrupos.length) {
+      list.innerHTML = `<div class="ms-empty">Nenhum subgrupo disponível</div>`;
+      return;
+    }
+    
+    subgrupos.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "ms-item";
+      div.dataset.codigo = item.codigo;
+      div.dataset.nome = item.nome;
+      
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.value = item.codigo;
+      cb.checked = selectedSubgrupos.has(item.codigo);
+      
+      cb.addEventListener("change", (e) => {
+        e.stopPropagation();
+        if (cb.checked) {
+          selectedSubgrupos.add(item.codigo);
+        } else {
+          selectedSubgrupos.delete(item.codigo);
+        }
+        updateMsLabelSub();
+        applyFilters();
+      });
+      
+      const span = document.createElement("span");
+      span.innerHTML = `<span style="color:var(--accent);font-weight:900;">${item.codigo}</span> — ${item.nome}`;
+      span.title = item.nome;
+      
+      div.appendChild(cb);
+      div.appendChild(span);
+      
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (e.target !== cb) {
+          cb.checked = !cb.checked;
+          cb.dispatchEvent(new Event("change"));
+        }
+      });
+      
+      list.appendChild(div);
+    });
+  }
+
+  function toggleMsDropdownSub(e) {
     e.stopPropagation();
-    const dd = el("msDropdown"), trigger = el("msTrigger");
-    if(dd.classList.contains("open")){ closeMsDropdown(); }
-    else {
-      dd.classList.add("open"); trigger.classList.add("open");
-      el("msSearch").value = ""; filterMsList(); el("msSearch").focus();
+    const dd = el("msDropdownSub"), trigger = el("msTriggerSub");
+    if (dd.classList.contains("open")) {
+      closeMsDropdownSub();
+    } else {
+      dd.classList.add("open");
+      trigger.classList.add("open");
+      if (el("msSearchSub")) {
+        el("msSearchSub").value = "";
+        filterMsListSub();
+        el("msSearchSub").focus();
+      }
     }
   }
-  function closeMsDropdown(){
-    el("msDropdown").classList.remove("open");
-    el("msTrigger").classList.remove("open");
+
+  function closeMsDropdownSub() {
+    const dd = el("msDropdownSub");
+    const trigger = el("msTriggerSub");
+    if (dd) dd.classList.remove("open");
+    if (trigger) trigger.classList.remove("open");
   }
-  function buildMsList(){
-    const list = el("msList"); list.innerHTML = "";
-    if(!allEspecialidades.length){ list.innerHTML=`<div class="ms-empty">Nenhuma especialidade disponível</div>`; return; }
-    allEspecialidades.forEach(esp=>{
-      const item=document.createElement("div"); item.className="ms-item"; item.dataset.esp=esp;
-      const cb=document.createElement("input"); cb.type="checkbox"; cb.value=esp; cb.checked=selectedEspecialidades.has(esp);
-      cb.addEventListener("change",()=>{ if(cb.checked) selectedEspecialidades.add(esp); else selectedEspecialidades.delete(esp); updateMsLabel(); applyFilters(); });
-      const span=document.createElement("span"); span.textContent=esp; span.title=esp;
+
+  function filterMsListSub() {
+    const q = (el("msSearchSub")?.value || "").toLowerCase().trim();
+    const items = el("msListSub")?.querySelectorAll(".ms-item");
+    if (!items) return;
+    
+    let visible = 0;
+    items.forEach(item => {
+      const codigo = item.dataset.codigo?.toLowerCase() || "";
+      const nome = item.dataset.nome?.toLowerCase() || "";
+      const match = codigo.includes(q) || nome.includes(q);
+      item.style.display = match ? "" : "none";
+      if (match) visible++;
+    });
+    
+    let emptyEl = el("msListSub")?.querySelector(".ms-empty");
+    if (!visible) {
+      if (!emptyEl) {
+        emptyEl = document.createElement("div");
+        emptyEl.className = "ms-empty";
+        el("msListSub")?.appendChild(emptyEl);
+      }
+      emptyEl.textContent = "Nenhum subgrupo encontrado";
+      emptyEl.style.display = "";
+    } else if (emptyEl) {
+      emptyEl.style.display = "none";
+    }
+  }
+
+  function selectAllSub(e) {
+    if (e) e.stopPropagation();
+    const items = el("msListSub")?.querySelectorAll(".ms-item");
+    if (!items) return;
+    
+    items.forEach(item => {
+      const cb = item.querySelector("input[type='checkbox']");
+      if (cb) {
+        cb.checked = true;
+        selectedSubgrupos.add(cb.value);
+      }
+    });
+    updateMsLabelSub();
+    applyFilters();
+  }
+
+  function clearSubSelection(e) {
+    if (e) e.stopPropagation();
+    selectedSubgrupos.clear();
+    el("msListSub")?.querySelectorAll("input[type='checkbox']").forEach(cb => {
+      cb.checked = false;
+    });
+    updateMsLabelSub();
+    applyFilters();
+  }
+
+  function updateMsLabelSub() {
+    const lbl = el("msLabelSub");
+    if (!lbl) return;
+    
+    const n = selectedSubgrupos.size;
+    const grupoSelect = el("grupoSelect");
+    const grupo = grupoSelect?.value;
+    
+    let total = 0;
+    if (grupo && GRUPOS[grupo]) {
+      total = GRUPOS[grupo].subgrupos.length;
+    } else {
+      total = Object.values(GRUPOS).reduce((acc, g) => acc + g.subgrupos.length, 0);
+    }
+    
+    if (n === 0 || n === total) {
+      lbl.textContent = "Todos os subgrupos";
+    } else if (n === 1) {
+      // Encontrar o nome abreviado do subgrupo selecionado
+      const codigo = selectedSubgrupos.values().next().value;
+      let encontrado = null;
+      Object.values(GRUPOS).forEach(g => {
+        g.subgrupos.forEach(s => {
+          if (s.codigo === codigo) encontrado = s.abrev;
+        });
+      });
+      lbl.textContent = encontrado || "1 selecionado";
+    } else {
+      lbl.textContent = `${n} subgrupos selecionados`;
+    }
+  }
+
+  // ===== MULTI-SELECT FUNCTIONS (Mês) =====
+  function toggleMsDropdownMes(e){
+    e.stopPropagation();
+    const dd = el("msDropdownMes"), trigger = el("msTriggerMes");
+    if(dd.classList.contains("open")){ closeMsDropdownMes(); }
+    else {
+      dd.classList.add("open"); trigger.classList.add("open");
+      if(el("msSearchMes")) {
+        el("msSearchMes").value = ""; 
+        filterMsListMes(); 
+        el("msSearchMes").focus();
+      }
+    }
+  }
+  function closeMsDropdownMes(){
+    const dd = el("msDropdownMes");
+    const trigger = el("msTriggerMes");
+    if(dd) dd.classList.remove("open");
+    if(trigger) trigger.classList.remove("open");
+  }
+  function buildMsListMes(){
+    const list = el("msListMes"); 
+    if(!list) return;
+    list.innerHTML = "";
+    if(!allMeses || !allMeses.length){ 
+      list.innerHTML=`<div class="ms-empty">Nenhum mês disponível</div>`; 
+      return; 
+    }
+    allMeses.forEach(mes=>{
+      const item=document.createElement("div"); item.className="ms-item"; item.dataset.mes=mes.key;
+      const cb=document.createElement("input"); cb.type="checkbox"; cb.value=mes.key; cb.checked=selectedMeses.has(mes.key);
+      cb.addEventListener("change",(e)=>{ 
+        e.stopPropagation();
+        if(cb.checked) selectedMeses.add(mes.key); 
+        else selectedMeses.delete(mes.key); 
+        updateMsLabelMes(); 
+        applyFilters(); 
+      });
+      const span=document.createElement("span"); span.textContent=mes.label; span.title=mes.label;
       item.appendChild(cb); item.appendChild(span);
-      item.addEventListener("click",(e)=>{ if(e.target!==cb){ cb.checked=!cb.checked; cb.dispatchEvent(new Event("change")); } });
+      item.addEventListener("click",(e)=>{ 
+        e.stopPropagation();
+        if(e.target!==cb){ 
+          cb.checked=!cb.checked; 
+          cb.dispatchEvent(new Event("change")); 
+        } 
+      });
       list.appendChild(item);
     });
   }
-  function filterMsList(){
-    const q=(el("msSearch").value||"").toLowerCase().trim();
-    const items=el("msList").querySelectorAll(".ms-item"); let visible=0;
-    items.forEach(item=>{ const match=item.dataset.esp.toLowerCase().includes(q); item.style.display=match?"":"none"; if(match) visible++; });
-    let emptyEl=el("msList").querySelector(".ms-empty");
-    if(!visible){ if(!emptyEl){ emptyEl=document.createElement("div"); emptyEl.className="ms-empty"; el("msList").appendChild(emptyEl); } emptyEl.textContent="Nenhuma especialidade encontrada"; emptyEl.style.display=""; }
+  function filterMsListMes(){
+    const q=(el("msSearchMes")?.value||"").toLowerCase().trim();
+    const items=el("msListMes")?.querySelectorAll(".ms-item"); 
+    if(!items) return;
+    let visible=0;
+    items.forEach(item=>{ 
+      const match=item.dataset.mes.toLowerCase().includes(q); 
+      item.style.display=match?"":"none"; 
+      if(match) visible++; 
+    });
+    let emptyEl=el("msListMes")?.querySelector(".ms-empty");
+    if(!visible){ 
+      if(!emptyEl){ 
+        emptyEl=document.createElement("div"); 
+        emptyEl.className="ms-empty"; 
+        el("msListMes")?.appendChild(emptyEl); 
+      } 
+      emptyEl.textContent="Nenhum mês encontrado"; 
+      emptyEl.style.display=""; 
+    }
     else if(emptyEl){ emptyEl.style.display="none"; }
   }
-  function selectAllEsp(e){ if(e) e.stopPropagation(); selectedEspecialidades.clear(); allEspecialidades.forEach(esp=>selectedEspecialidades.add(esp)); el("msList").querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=true;}); updateMsLabel(); applyFilters(); }
-  function clearEspSelection(e){ if(e) e.stopPropagation(); selectedEspecialidades.clear(); el("msList").querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=false;}); updateMsLabel(); applyFilters(); }
-  function updateMsLabel(){ const lbl=el("msLabel"),n=selectedEspecialidades.size,total=allEspecialidades.length; if(n===0||n===total) lbl.textContent="Todas"; else if(n===1) lbl.textContent=[...selectedEspecialidades][0]; else lbl.textContent=`${n} selecionadas`; }
+  function selectAllMes(e){ 
+    if(e) e.stopPropagation(); 
+    selectedMeses.clear(); 
+    allMeses.forEach(mes=>selectedMeses.add(mes.key)); 
+    el("msListMes")?.querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=true;}); 
+    updateMsLabelMes(); 
+    applyFilters(); 
+  }
+  function clearMesSelection(e){ 
+    if(e) e.stopPropagation(); 
+    selectedMeses.clear(); 
+    el("msListMes")?.querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=false;}); 
+    updateMsLabelMes(); 
+    applyFilters(); 
+  }
+  function updateMsLabelMes(){ 
+    const lbl=el("msLabelMes");
+    if(!lbl) return;
+    const n=selectedMeses.size,total=allMeses.length; 
+    if(n===0||n===total) lbl.textContent="Todos"; 
+    else if(n===1) {
+      const firstKey = selectedMeses.values().next().value;
+      const firstMes = allMeses.find(m=>m.key===firstKey);
+      lbl.textContent=firstMes ? firstMes.label : "1 selecionado";
+    }
+    else lbl.textContent=`${n} meses selecionados`; 
+  }
 
   // ===== TOAST =====
   function toast(msg,type="info"){
@@ -1294,7 +1634,6 @@
   function normHeader(h){ return normStr(h).toUpperCase(); }
   function toInt(v){ const s=normStr(v).toUpperCase(); if(!s||s==="SEM DADOS") return 0; const n=parseInt(s.replace(/[^\d-]/g,""),10); return Number.isFinite(n)?n:0; }
   
-  // NOVA FUNÇÃO: parse financeiro da nova coluna
   function parseFinanceiro(v){
     const s=normStr(v).toUpperCase().trim();
     if(!s||s==="NT"||s==="-"||s==="N/A"||s==="—"||s==="S/D"||s==="SEM DADOS") return 0;
@@ -1324,14 +1663,34 @@
     return 999998;
   }
 
-  // ===== FUNÇÃO PARA NORMALIZAR NOMES DE ESPECIALIDADES =====
-  function normalizeEspName(esp) {
-    return esp
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^\w\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+  // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES =====
+  function abbreviateEspName(esp, maxLength = 25) {
+    if (!esp) return "";
+    
+    // Primeiro, verificar se é um código/subgrupo que temos mapeado
+    for (const grupo of Object.values(GRUPOS)) {
+      for (const sub of grupo.subgrupos) {
+        if (esp.includes(sub.codigo) || esp.includes(sub.nome)) {
+          return sub.abrev;
+        }
+      }
+    }
+    
+    // Se não encontrou no mapeamento, fazer abreviação automática
+    if (esp.length <= maxLength) return esp;
+    
+    let abbr = esp
+      .replace(/^OCI\s*/i, "")
+      .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i, "OFTALMO ")
+      .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i, "INVEST. CA ")
+      .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, "PROG. CA ")
+      .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i, "DIAG/TERAP CA ")
+      .replace(/AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i, "DIAG. CA ")
+      .replace(/TRATAMENTO DE CANCER DE\s*/i, "TRAT. CA ")
+      .replace(/\s+/g, " ").trim();
+    
+    if (abbr.length <= maxLength) return abbr;
+    return abbr.substring(0, maxLength - 3) + "...";
   }
 
   // ===== FILTER POPUP FUNCTIONS =====
@@ -1347,74 +1706,74 @@
   }
 
   function applyTopEspFilter() {
-    topEspFilterMonth = el("topEspMesSelect").value;
-    el("topEspFilter").classList.remove('show');
-    buildTop(getActiveEsp(), topEspFilterMonth || el("fMesAno").value);
+    topEspFilterMonth = el("topEspMesSelect")?.value || "";
+    if(el("topEspFilter")) el("topEspFilter").classList.remove('show');
+    buildTop(getActiveEsp(), topEspFilterMonth || null);
   }
   function clearTopEspFilter() {
     topEspFilterMonth = "";
-    el("topEspMesSelect").value = "";
-    el("topEspFilter").classList.remove('show');
-    buildTop(getActiveEsp(), el("fMesAno").value);
+    if(el("topEspMesSelect")) el("topEspMesSelect").value = "";
+    if(el("topEspFilter")) el("topEspFilter").classList.remove('show');
+    buildTop(getActiveEsp(), null);
   }
 
   function applyIndicadoresFilter(){
-    indicadoresFilterMonth = el("indicadoresMesSelect").value;
-    el("indicadoresFilter").classList.remove('show');
+    indicadoresFilterMonth = el("indicadoresMesSelect")?.value || "";
+    if(el("indicadoresFilter")) el("indicadoresFilter").classList.remove('show');
     updateCharts();
   }
   function clearIndicadoresFilter(){
     indicadoresFilterMonth = "";
-    el("indicadoresMesSelect").value = "";
-    el("indicadoresFilter").classList.remove('show');
+    if(el("indicadoresMesSelect")) el("indicadoresMesSelect").value = "";
+    if(el("indicadoresFilter")) el("indicadoresFilter").classList.remove('show');
     updateCharts();
   }
 
   function applyReceitaFilter() {
-    receitaFilterMonth = el("receitaMesSelect").value;
-    el("receitaFilter").classList.remove('show');
+    receitaFilterMonth = el("receitaMesSelect")?.value || "";
+    if(el("receitaFilter")) el("receitaFilter").classList.remove('show');
     buildReceita();
   }
   function clearReceitaFilter() {
     receitaFilterMonth = "";
-    el("receitaMesSelect").value = "";
-    el("receitaFilter").classList.remove('show');
+    if(el("receitaMesSelect")) el("receitaMesSelect").value = "";
+    if(el("receitaFilter")) el("receitaFilter").classList.remove('show');
     buildReceita();
   }
 
   function applyDistribuicaoFilter() {
-    distribuicaoFilterMonth = el("distribuicaoMesSelect").value;
-    el("distribuicaoFilter").classList.remove('show');
+    distribuicaoFilterMonth = el("distribuicaoMesSelect")?.value || "";
+    if(el("distribuicaoFilter")) el("distribuicaoFilter").classList.remove('show');
     buildDistribuicao();
   }
   function clearDistribuicaoFilter() {
     distribuicaoFilterMonth = "";
-    el("distribuicaoMesSelect").value = "";
-    el("distribuicaoFilter").classList.remove('show');
+    if(el("distribuicaoMesSelect")) el("distribuicaoMesSelect").value = "";
+    if(el("distribuicaoFilter")) el("distribuicaoFilter").classList.remove('show');
     buildDistribuicao();
   }
 
   function applyReceitaEspFilter() {
-    receitaEspFilterMonth = el("receitaEspMesSelect").value;
-    el("receitaEspFilter").classList.remove('show');
+    receitaEspFilterMonth = el("receitaEspMesSelect")?.value || "";
+    if(el("receitaEspFilter")) el("receitaEspFilter").classList.remove('show');
     buildFinBarEsp();
   }
   function clearReceitaEspFilter() {
     receitaEspFilterMonth = "";
-    el("receitaEspMesSelect").value = "";
-    el("receitaEspFilter").classList.remove('show');
+    if(el("receitaEspMesSelect")) el("receitaEspMesSelect").value = "";
+    if(el("receitaEspFilter")) el("receitaEspFilter").classList.remove('show');
     buildFinBarEsp();
   }
 
   function applyFinDonutFilter() {
-    finDonutFilterMonth = el("finDonutMesSelect").value;
-    el("finDonutFilter").classList.remove('show');
+    finDonutFilterMonth = el("finDonutMesSelect")?.value || "";
+    if(el("finDonutFilter")) el("finDonutFilter").classList.remove('show');
     buildFinDonut();
   }
   function clearFinDonutFilter() {
     finDonutFilterMonth = "";
-    el("finDonutMesSelect").value = "";
-    el("finDonutFilter").classList.remove('show');
+    if(el("finDonutMesSelect")) el("finDonutMesSelect").value = "";
+    if(el("finDonutFilter")) el("finDonutFilter").classList.remove('show');
     buildFinDonut();
   }
 
@@ -1424,11 +1783,16 @@
     const popup = el("columnFilterPopup");
     const select = el("colFilterSelect");
 
+    if(!dataF || !dataF.length) {
+      toast("Sem dados para filtrar","info");
+      return;
+    }
+
     let values = [];
     if(col === 'especialidade') {
       values = [...new Set(dataF.map(x => x.especialidade))].sort();
     } else if(col === 'idade') {
-            values = [...new Set(dataF.map(x => x.idade || "Não informado"))].sort();
+      values = [...new Set(dataF.map(x => x.idade || "Não informado"))].sort();
     } else if(col === 'mesKey') {
       values = [...new Set(dataF.map(x => x.mesLabel || x.mesRaw))].sort();
     } else {
@@ -1448,14 +1812,14 @@
   function applyColumnFilter() {
     const select = el("colFilterSelect");
     columnFilterValues = Array.from(select.selectedOptions).map(opt => opt.value);
-    el("columnFilterPopup").classList.remove('show');
+    if(el("columnFilterPopup")) el("columnFilterPopup").classList.remove('show');
     renderTable();
   }
 
   function clearColumnFilter() {
     columnFilterValues = [];
-    el("colFilterSelect").value = "";
-    el("columnFilterPopup").classList.remove('show');
+    if(el("colFilterSelect")) el("colFilterSelect").value = "";
+    if(el("columnFilterPopup")) el("columnFilterPopup").classList.remove('show');
     renderTable();
   }
 
@@ -1464,6 +1828,11 @@
     event.stopPropagation();
     const popup = el("finColumnFilterPopup");
     const select = el("finColFilterSelect");
+
+    if(!finData || !finData.length) {
+      toast("Sem dados financeiros para filtrar","info");
+      return;
+    }
 
     let options = [];
     if(type === 'esp') {
@@ -1498,7 +1867,7 @@
   function applyFinColumnFilter() {
     const select = el("finColFilterSelect");
     finColumnFilterValues = Array.from(select.selectedOptions).map(opt => opt.value);
-    el("finColumnFilterPopup").classList.remove('show');
+    if(el("finColumnFilterPopup")) el("finColumnFilterPopup").classList.remove('show');
     renderFinTable();
   }
 
@@ -1506,8 +1875,8 @@
     finColumnFilterValues = [];
     finColumnFilterType = null;
     activeFinColumnFilter = null;
-    el("finColFilterSelect").value = "";
-    el("finColumnFilterPopup").classList.remove('show');
+    if(el("finColFilterSelect")) el("finColFilterSelect").value = "";
+    if(el("finColumnFilterPopup")) el("finColumnFilterPopup").classList.remove('show');
     renderFinTable();
   }
 
@@ -1543,15 +1912,6 @@
     if(v>=1000)    return "R$\u00a0"+(v/1000).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"K";
     return formatBRL(v);
   }
-  function espShort(esp){
-    return esp
-      .replace(/^OCI\s*/i,"")
-      .replace(/AVALIACAO INICIAL EM OFTALMOLOGIA\s*[-–]?\s*/i,"OFTALMO ")
-      .replace(/INVESTIGACAO DIAGNOSTICA DE CANCER DE\s*/i,"INVEST. CA ")
-      .replace(/PROGRESSAO DA AVALIACAO DIAGNOSTICA DE CANCER DE\s*/i,"PROG. CA ")
-      .replace(/AVALIACAO DIAGNOSTICA E TERAPEUTICA DE CANCER DE\s*/i,"DIAG/TERAP CA ")
-      .replace(/\s+/g," ").trim();
-  }
 
   // ===== LOAD OCI DATA =====
   async function loadData(showMsg=false){
@@ -1568,14 +1928,12 @@
         const mesRaw=normStr(r["MÊS/2025"]||r["MES/2025"]||r["MÊS"]||r["MES"]);
         const mes=parseMesAno(mesRaw);
         
-        // COLUNA FINANCEIRA - tentar vários nomes possíveis
         let financeiroVal = 0;
         if(r["FINANCEIRO"] !== undefined) financeiroVal = parseFinanceiro(r["FINANCEIRO"]);
         else if(r["VALOR"] !== undefined) financeiroVal = parseFinanceiro(r["VALOR"]);
         else if(r["RECEITA"] !== undefined) financeiroVal = parseFinanceiro(r["RECEITA"]);
         else if(r["R$"] !== undefined) financeiroVal = parseFinanceiro(r["R$"]);
         else {
-          // Tentar a última coluna (se não tiver nome específico)
           const keys = Object.keys(r);
           if(keys.length > 0) {
             const lastKey = keys[keys.length - 1];
@@ -1593,10 +1951,17 @@
           financeiro: financeiroVal
         };
       }).filter(x=>x.especialidade);
+      
       allData.sort((a,b)=>mesSortKey(a)-mesSortKey(b)||a.especialidade.localeCompare(b.especialidade));
+      
       fillFilters();
       populateOciMonthFilterSelects();
-      applyFilters();
+      
+      dataF = [...allData];
+      
+      updateKPIs(); 
+      updateCharts(); 
+      renderTable();
 
       const now=new Date();
       el("lastUpdate").textContent=`Última atualização: ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")}`;
@@ -1604,7 +1969,9 @@
     }catch(err){
       console.error(err);
       toast("Falha ao carregar o CSV do Sheets. Verifique permissões/compartilhamento.","error");
-      allData=[]; dataF=[]; fillFilters(); populateOciMonthFilterSelects(); applyFilters();
+      allData=[]; dataF=[]; 
+      fillFilters(); 
+      populateOciMonthFilterSelects(); 
     }finally{ el("loading").classList.remove("on"); }
   }
 
@@ -1669,26 +2036,26 @@
     const lastM=monthTotals[monthTotals.length-1];
     const prevM=monthTotals.length>=2?monthTotals[monthTotals.length-2]:null;
 
-    el("fKTotal").textContent=formatBRLCompact(totalGeral);
-    el("fKTotalSub").textContent=`${finMonths.length} competências • ${finData.length} especialidades`;
+    if(el("fKTotal")) el("fKTotal").textContent=formatBRLCompact(totalGeral);
+    if(el("fKTotalSub")) el("fKTotalSub").textContent=`${finMonths.length} competências • ${finData.length} especialidades`;
 
-    el("fKBest").textContent=formatBRLCompact(bestMonth?.total||0);
-    el("fKBestSub").textContent=bestMonth?`Competência: ${bestMonth.shortLabel}`:"—";
+    if(el("fKBest")) el("fKBest").textContent=formatBRLCompact(bestMonth?.total||0);
+    if(el("fKBestSub")) el("fKBestSub").textContent=bestMonth?`Competência: ${bestMonth.shortLabel}`:"—";
 
-    el("fKAvg").textContent=formatBRLCompact(avg);
-    if(prevM&&lastM){
+    if(el("fKAvg")) el("fKAvg").textContent=formatBRLCompact(avg);
+    if(prevM&&lastM && el("fKAvgSub")){
       const delta=lastM.total-prevM.total;
       const pct=prevM.total?((delta/prevM.total)*100):0;
       const sign=delta>=0?"+":"";
       const arr=delta>=0?"↑":"↓";
       el("fKAvgSub").textContent=`Último (${lastM.shortLabel}): ${arr} ${sign}${pct.toFixed(1)}% vs ${prevM.shortLabel}`;
-    } else {
+    } else if(el("fKAvgSub")) {
       el("fKAvgSub").textContent=`Média de ${activeMths.length} meses ativos`;
     }
 
-    el("fKTopEsp").textContent=formatBRLCompact(topEsp?.total||0);
-    const espAbr=topEsp?espShort(topEsp.esp):"—";
-    el("fKTopEspSub").textContent=(espAbr.length>38?espAbr.substring(0,36)+"…":espAbr)+" — maior receita";
+    if(el("fKTopEsp")) el("fKTopEsp").textContent=formatBRLCompact(topEsp?.total||0);
+    const espAbr=topEsp?abbreviateEspName(topEsp.esp, 38):"—";
+    if(el("fKTopEspSub")) el("fKTopEspSub").textContent=espAbr+" — maior receita";
   }
 
   // ===== BUILD ALL FINANCIAL CHARTS =====
@@ -1696,8 +2063,8 @@
     if(!finData.length||!finMonths.length) return;
 
     const monthOptions = finMonths.map(m => `<option value="${m.key}">${m.shortLabel}</option>`).join('');
-    el("receitaEspMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
-    el("finDonutMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
+    if(el("receitaEspMesSelect")) el("receitaEspMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
+    if(el("finDonutMesSelect")) el("finDonutMesSelect").innerHTML = '<option value="">Todos os meses</option>' + monthOptions;
 
     buildFinEvolucao();
     buildFinBarEsp();
@@ -1709,7 +2076,9 @@
   // ===== FIN CHART 1: Evolução Mensal =====
   function buildFinEvolucao(){
     destroy("cFinEvolucao");
-    const ctx=el("cFinEvolucao").getContext("2d");
+    const canvas = el("cFinEvolucao");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
     const monthTotals=finMonths.map(m=>({
       label:m.shortLabel,
       total:finData.reduce((acc,r)=>acc+(r.monthValues[m.key]||0),0)
@@ -1778,7 +2147,9 @@
   // ===== FIN CHART 2: Horizontal Bar por Especialidade =====
   function buildFinBarEsp(){
     destroy("cFinBarEsp");
-    const ctx=el("cFinBarEsp").getContext("2d");
+    const canvas = el("cFinBarEsp");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
     let dataToUse = finData;
     if(receitaEspFilterMonth) {
@@ -1792,7 +2163,7 @@
     charts["cFinBarEsp"]=new Chart(ctx,{
       type:"bar",
       data:{
-        labels:sorted.map(r=>espShort(r.esp)),
+        labels:sorted.map(r=>abbreviateEspName(r.esp, 25)),
         datasets:[{
           label:"Receita",
           data:sorted.map(r=>r.total),
@@ -1832,7 +2203,9 @@
   // ===== FIN CHART 3: Donut Participação =====
   function buildFinDonut(){
     destroy("cFinDonut");
-    const ctx=el("cFinDonut").getContext("2d");
+    const canvas = el("cFinDonut");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
     let dataToUse = finData;
     if(finDonutFilterMonth){
@@ -1844,7 +2217,7 @@
       dataToUse = finData.map(r => ({esp:r.esp, total:r.total})).filter(r=>r.total>0);
     }
 
-    const labels = dataToUse.map(r=>espShort(r.esp));
+    const labels = dataToUse.map(r=>abbreviateEspName(r.esp, 20));
     const values = dataToUse.map(r=>r.total);
 
     charts["cFinDonut"]=new Chart(ctx,{
@@ -1902,21 +2275,27 @@
   // ===== FIN CHART 4: Barras Agrupadas =====
   function buildFinStack(){
     destroy("cFinStack");
-    const ctx=el("cFinStack").getContext("2d");
+    const canvas = el("cFinStack");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
+
+    const activeDatasets = finData
+      .filter(r => r.total > 0)
+      .map((r,i) => ({
+        label: abbreviateEspName(r.esp, 15),
+        data: finMonths.map(m => r.monthValues[m.key] || 0),
+        backgroundColor: FIN_COLORS[i % FIN_COLORS.length],
+        borderRadius: 6,
+        borderSkipped: false,
+        barPercentage: 0.9,
+        categoryPercentage: 0.8
+      }));
 
     charts["cFinStack"]=new Chart(ctx,{
       type:"bar",
       data:{
         labels:finMonths.map(m=>m.shortLabel),
-        datasets:finData.map((r,i)=>({
-          label:espShort(r.esp),
-          data:finMonths.map(m=>r.monthValues[m.key]||0),
-          backgroundColor:FIN_COLORS[i%FIN_COLORS.length],
-          borderRadius:6,
-          borderSkipped:false,
-          barPercentage:0.9,
-          categoryPercentage:0.8
-        }))
+        datasets: activeDatasets
       },
       options:{
         responsive:true,maintainAspectRatio:false,
@@ -1960,6 +2339,7 @@
   // ===== FIN TABLE =====
   function renderFinTable(){
     const wrap=el("finTableWrap");
+    if(!wrap) return;
     if(!finData.length||!finMonths.length){
       wrap.innerHTML=`<div style="padding:20px;text-align:center;color:var(--muted);font-weight:700;">Nenhum dado financeiro disponível.</div>`;
       return;
@@ -2041,22 +2421,19 @@
 
   // ===== FILL FILTERS =====
   function fillFilters(){
-    allEspecialidades=[...new Set(allData.map(x=>x.especialidade).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    const meses=[...new Map(allData.filter(x=>x.mesKey).sort((a,b)=>mesSortKey(a)-mesSortKey(b)).map(x=>[x.mesKey,x.mesLabel])).entries()];
-    const sMes=el("fMesAno"); const curMes=sMes.value;
-    while(sMes.options.length>1) sMes.remove(1);
-    meses.forEach(([k,label])=>{ const o=document.createElement("option"); o.value=k; o.textContent=label; sMes.appendChild(o); });
-    if(curMes) sMes.value=curMes;
-    buildMsList(); updateMsLabel();
+    const mesesMap=new Map(allData.filter(x=>x.mesKey).sort((a,b)=>mesSortKey(a)-mesSortKey(b)).map(x=>[x.mesKey, {key:x.mesKey, label:x.mesLabel}]));
+    allMeses = Array.from(mesesMap.values());
+    
+    buildMsListMes(); 
+    updateMsLabelMes();
+    
+    // Inicializar subgrupos com todos os grupos
+    buildSubgrupoList("");
+    updateMsLabelSub();
   }
 
   function populateOciMonthFilterSelects(){
-    const meses = [...new Map(
-      allData
-        .filter(x=>x.mesKey)
-        .sort((a,b)=>mesSortKey(a)-mesSortKey(b))
-        .map(x=>[x.mesKey, x.mesLabel])
-    ).entries()].map(([key,label])=>({key,label}));
+    const meses = allMeses.map(({key,label})=>({key,label}));
 
     const html = `<option value="">Todos os meses</option>` + meses.map(m=>`<option value="${m.key}">${m.label}</option>`).join("");
 
@@ -2067,34 +2444,63 @@
   }
 
   function clearFilters(){
-    selectedEspecialidades.clear();
-    el("msList").querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=false;});
-    updateMsLabel(); el("fMesAno").value=""; applyFilters();
+    selectedSubgrupos.clear();
+    el("msListSub")?.querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=false;});
+    updateMsLabelSub(); 
+    
+    selectedMeses.clear();
+    el("msListMes")?.querySelectorAll("input[type='checkbox']").forEach(cb=>{cb.checked=false;});
+    updateMsLabelMes();
+    
+    if(el("grupoSelect")) el("grupoSelect").value = "";
+    
+    applyFilters();
   }
 
   function applyFilters(){
-    const mes=el("fMesAno").value;
-    dataF=allData.filter(x=>{
-      if(selectedEspecialidades.size>0&&selectedEspecialidades.size<allEspecialidades.length){
-        if(!selectedEspecialidades.has(x.especialidade)) return false;
+    if(!allData || !allData.length) {
+      dataF = [];
+      return;
+    }
+    
+    dataF = allData.filter(x=>{
+      // Filtro por subgrupo (código TUSS)
+      if(selectedSubgrupos.size > 0) {
+        let found = false;
+        for (const codigo of selectedSubgrupos) {
+          if (x.especialidade.includes(codigo)) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) return false;
       }
-      if(mes&&x.mesKey!==mes) return false;
+      
+      // Filtro por mês
+      if(selectedMeses.size>0 && selectedMeses.size<allMeses.length){
+        if(!selectedMeses.has(x.mesKey)) return false;
+      }
       return true;
     });
-    updateKPIs(); updateCharts(); renderTable();
+    updateKPIs(); 
+    updateCharts(); 
+    renderTable();
   }
 
   // ===== KPIs =====
   function sum(col, rows=dataF){ return rows.reduce((acc,x)=>acc+(x[col]||0),0); }
   function pct(a,b){ if(!b) return 0; return (a/b)*100; }
-  function setNum(id,n){ el(id).textContent=(n||0).toLocaleString("pt-BR"); }
+  function setNum(id,n){ 
+    const elem = el(id);
+    if(elem) elem.textContent=(n||0).toLocaleString("pt-BR"); 
+  }
   function updateKPIs(){
     const ag=sum("agendado"),rec=sum("recepcionado"),apac=sum("apac"),fat=sum("faturado");
     setNum("kAg",ag); setNum("kRec",rec); setNum("kApac",apac); setNum("kFat",fat);
-    el("kAgSub").textContent=`Recepção: ${pct(rec,ag).toFixed(1)}%`;
-    el("kRecSub").textContent=`APAC/Recep.: ${pct(apac,rec).toFixed(1)}%`;
-    el("kApacSub").textContent=`Fat./Recep.: ${pct(fat,rec).toFixed(1)}%`;
-    el("kFatSub").textContent=`Fat./Ag.: ${pct(fat,ag).toFixed(1)}%`;
+    if(el("kAgSub")) el("kAgSub").textContent=`Recepção: ${pct(rec,ag).toFixed(1)}%`;
+    if(el("kRecSub")) el("kRecSub").textContent=`APAC/Recep.: ${pct(apac,rec).toFixed(1)}%`;
+    if(el("kApacSub")) el("kApacSub").textContent=`Fat./Recep.: ${pct(fat,rec).toFixed(1)}%`;
+    if(el("kFatSub")) el("kFatSub").textContent=`Fat./Ag.: ${pct(fat,ag).toFixed(1)}%`;
   }
 
   // ===== CHART HELPERS =====
@@ -2113,17 +2519,22 @@
       }
     };
   }
-  function getActiveEsp(){ return selectedEspecialidades.size===1?[...selectedEspecialidades][0]:""; }
+  function getActiveEsp(){ return ""; } // Não usado mais
   function labelMes(key){ const found=allData.find(x=>x.mesKey===key); return found?found.mesLabel:key; }
 
   function getOciDataForMonth(monthKey){
     if(!monthKey) return dataF;
-    const globalMes = el("fMesAno").value;
-    if(globalMes && globalMes === monthKey) return dataF;
-
     return allData.filter(x=>{
-      if(selectedEspecialidades.size>0 && selectedEspecialidades.size<allEspecialidades.length){
-        if(!selectedEspecialidades.has(x.especialidade)) return false;
+      // Filtro por subgrupo (código TUSS)
+      if(selectedSubgrupos.size > 0) {
+        let found = false;
+        for (const codigo of selectedSubgrupos) {
+          if (x.especialidade.includes(codigo)) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) return false;
       }
       return x.mesKey === monthKey;
     });
@@ -2131,30 +2542,38 @@
 
   // ===== UPDATE ALL OCI CHARTS =====
   function updateCharts(){
-    const esp=getActiveEsp(), mes=el("fMesAno").value;
-
-    buildEvolucao(esp,mes);
-    buildTop(esp, topEspFilterMonth || mes);
-
-    const indMes = indicadoresFilterMonth || mes;
+    if(!allData || !allData.length) return;
+    
+    buildEvolucao();
+    buildTop(getActiveEsp(), topEspFilterMonth);
+    
+    const indMes = indicadoresFilterMonth;
     buildGaugeFatRec(indMes);
     buildGaugeAbsenteismo(indMes);
 
-    // GRÁFICOS COM FILTROS
     buildReceita();  
     buildDistribuicao(); 
+    buildComparativo();
 
-    el("subEvolucao").textContent=esp
-      ?`Especialidade: ${esp} • ${mes?("Mês: "+labelMes(mes)):"Todos os meses"}`
-      :`Especialidade: Todas • ${mes?("Mês: "+labelMes(mes)):"Todos os meses"}`;
+    const mesLabels = selectedMeses.size === 1 ? `Mês: ${labelMes([...selectedMeses][0])}` : 
+                      selectedMeses.size > 1 ? `${selectedMeses.size} meses selecionados` : 
+                      "Todos os meses";
+    
+    const subLabel = selectedSubgrupos.size === 1 ? `Subgrupo: ${[...selectedSubgrupos][0]}` :
+                     selectedSubgrupos.size > 0 ? `${selectedSubgrupos.size} subgrupos selecionados` :
+                     "Todos os subgrupos";
+    
+    if(el("subEvolucao")) el("subEvolucao").textContent = `${subLabel} • ${mesLabels}`;
   }
 
   // ===== GAUGE 1: Taxa de Faturamento =====
   function buildGaugeFatRec(monthKey){
     destroy("cGaugeFatRec");
-    const ctx=el("cGaugeFatRec").getContext("2d");
+    const canvas = el("cGaugeFatRec");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
-    const rows = getOciDataForMonth(monthKey);
+    const rows = monthKey ? getOciDataForMonth(monthKey) : dataF;
     const rec=sum("recepcionado", rows), fat=sum("faturado", rows);
 
     const pctVal=rec>0?Math.min((fat/rec)*100,100):0;
@@ -2162,18 +2581,32 @@
     if(pctVal>=80){color="#059669";badgeBg="rgba(5,150,105,.30)";badgeColor="#064e3b";badgeText="✓ Ótimo";}
     else if(pctVal>=50){color="#d97706";badgeBg="rgba(217,119,6,.28)";badgeColor="#78350f";badgeText="⚠ Regular";}
     else{color="#b91c1c";badgeBg="rgba(185,28,28,.26)";badgeColor="#7f1d1d";badgeText="✗ Crítico";}
-    el("gaugeFatRecPct").textContent=pctVal.toFixed(1)+"%"; el("gaugeFatRecPct").style.color=color;
-    const badge=el("gaugeFatRecBadge"); badge.textContent=badgeText; badge.style.background=badgeBg; badge.style.color=badgeColor; badge.style.border=`1px solid ${color}99`;
-    el("gFatRecRec").textContent=rec.toLocaleString("pt-BR"); el("gFatRecFat").textContent=fat.toLocaleString("pt-BR"); el("gFatRecDiff").textContent=Math.max(0,rec-fat).toLocaleString("pt-BR");
+    if(el("gaugeFatRecPct")) {
+      el("gaugeFatRecPct").textContent=pctVal.toFixed(1)+"%"; 
+      el("gaugeFatRecPct").style.color=color;
+    }
+    const badge=el("gaugeFatRecBadge"); 
+    if(badge) {
+      badge.textContent=badgeText; 
+      badge.style.background=badgeBg; 
+      badge.style.color=badgeColor; 
+      badge.style.border=`1px solid ${color}99`;
+    }
+    if(el("gFatRecRec")) el("gFatRecRec").textContent=rec.toLocaleString("pt-BR"); 
+    if(el("gFatRecFat")) el("gFatRecFat").textContent=fat.toLocaleString("pt-BR"); 
+    if(el("gFatRecDiff")) el("gFatRecDiff").textContent=Math.max(0,rec-fat).toLocaleString("pt-BR");
+    
     charts["cGaugeFatRec"]=new Chart(ctx,{type:"doughnut",data:{datasets:[{data:[50,30,20],backgroundColor:["rgba(185,28,28,.50)","rgba(217,119,6,.50)","rgba(5,150,105,.50)"],borderWidth:0,hoverOffset:0,weight:1},{data:[pctVal,100-pctVal],backgroundColor:[color,"rgba(226,232,240,0.0)"],borderWidth:0,borderRadius:8,hoverOffset:0,weight:2}]},options:{rotation:-90,circumference:180,cutout:"68%",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},animation:{animateRotate:true,duration:900}}});
   }
 
   // ===== GAUGE 2: Índice de Absenteísmo =====
   function buildGaugeAbsenteismo(monthKey){
     destroy("cGaugeAbs");
-    const ctx=el("cGaugeAbs").getContext("2d");
+    const canvas = el("cGaugeAbs");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
-    const rows = getOciDataForMonth(monthKey);
+    const rows = monthKey ? getOciDataForMonth(monthKey) : dataF;
     const ag=sum("agendado", rows), rec=sum("recepcionado", rows), ausencias=Math.max(0,ag-rec);
 
     const absPct=ag>0?Math.min((ausencias/ag)*100,100):0;
@@ -2182,24 +2615,48 @@
     else if(absPct<=20){color="#3b82f6";badgeBg="rgba(59,130,246,.28)";badgeColor="#1e3a8a";badgeText="✓ Bom";}
     else if(absPct<=35){color="#d97706";badgeBg="rgba(217,119,6,.28)";badgeColor="#78350f";badgeText="⚠ Atenção";}
     else{color="#b91c1c";badgeBg="rgba(185,28,28,.26)";badgeColor="#7f1d1d";badgeText="✗ Crítico";}
-    el("gaugeAbsPct").textContent=absPct.toFixed(1)+"%"; el("gaugeAbsPct").style.color=color;
-    const badge=el("gaugeAbsBadge"); badge.textContent=badgeText; badge.style.background=badgeBg; badge.style.color=badgeColor; badge.style.border=`1px solid ${color}99`;
-    el("gAbsAg").textContent=ag.toLocaleString("pt-BR"); el("gAbsRec").textContent=rec.toLocaleString("pt-BR"); el("gAbsAus").textContent=ausencias.toLocaleString("pt-BR");
+    if(el("gaugeAbsPct")) {
+      el("gaugeAbsPct").textContent=absPct.toFixed(1)+"%"; 
+      el("gaugeAbsPct").style.color=color;
+    }
+    const badge=el("gaugeAbsBadge"); 
+    if(badge) {
+      badge.textContent=badgeText; 
+      badge.style.background=badgeBg; 
+      badge.style.color=badgeColor; 
+      badge.style.border=`1px solid ${color}99`;
+    }
+    if(el("gAbsAg")) el("gAbsAg").textContent=ag.toLocaleString("pt-BR"); 
+    if(el("gAbsRec")) el("gAbsRec").textContent=rec.toLocaleString("pt-BR"); 
+    if(el("gAbsAus")) el("gAbsAus").textContent=ausencias.toLocaleString("pt-BR");
+    
     charts["cGaugeAbs"]=new Chart(ctx,{type:"doughnut",data:{datasets:[{data:[10,10,15,65],backgroundColor:["rgba(5,150,105,.50)","rgba(59,130,246,.50)","rgba(217,119,6,.50)","rgba(185,28,28,.50)"],borderWidth:0,hoverOffset:0,weight:1},{data:[absPct,100-absPct],backgroundColor:[color,"rgba(226,232,240,0.0)"],borderWidth:0,borderRadius:8,hoverOffset:0,weight:2}]},options:{rotation:-90,circumference:180,cutout:"68%",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},animation:{animateRotate:true,duration:900}}});
   }
 
   // ===== CHART: Evolução Mensal OCI =====
-  function buildEvolucao(esp,mes){
+  function buildEvolucao(){
     destroy("cEvolucao");
-    const ctx=el("cEvolucao").getContext("2d");
-    const source=mes
-      ? allData.filter(x=>{
-          if(selectedEspecialidades.size>0&&selectedEspecialidades.size<allEspecialidades.length){
-            if(!selectedEspecialidades.has(x.especialidade)) return false;
+    const canvas = el("cEvolucao");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
+    
+    let source = allData.filter(x=>{
+      // Filtro por subgrupo (código TUSS)
+      if(selectedSubgrupos.size > 0) {
+        let found = false;
+        for (const codigo of selectedSubgrupos) {
+          if (x.especialidade.includes(codigo)) {
+            found = true;
+            break;
           }
-          return true;
-        })
-      : dataF;
+        }
+        if (!found) return false;
+      }
+      if(selectedMeses.size>0 && selectedMeses.size<allMeses.length){
+        if(!selectedMeses.has(x.mesKey)) return false;
+      }
+      return true;
+    });
 
     const map=new Map();
     source.forEach(x=>{
@@ -2229,13 +2686,13 @@
             position:"top",
             labels:{
               font:{size:13,weight:"800"},
-              padding:10,  // Aumentado padding para dar mais espaço
+              padding:10,
               usePointStyle: true,
               pointStyle: "circle"
             }
           },
           datalabels:{
-            display:true,anchor:"end",align:"top",offset:6, // Aumentado offset para afastar da linha
+            display:true,anchor:"end",align:"top",offset:6,
             color:(ctx)=>datasetColors[ctx.datasetIndex]||"#0f172a",
             font:{size:11,weight:"800"},
             formatter:(v)=>v?v.toLocaleString("pt-BR"):""
@@ -2243,7 +2700,7 @@
         },
         layout: {
           padding: {
-            top: 10,    // Aumentado padding superior para afastar a legenda
+            top: 10,
             bottom: 20
           }
         }
@@ -2254,67 +2711,28 @@
   // ===== CHART: Top Especialidades =====
   function buildTop(esp,mes){
     destroy("cTop");
-    const ctx=el("cTop").getContext("2d");
+    const canvas = el("cTop");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
-    const source = getOciDataForMonth(mes);
-
-    if(esp){
-      const map=new Map();
-      source
-        .filter(x => x.especialidade === esp)
-        .forEach(x=>{
-          const k=x.idade||"Não informado";
-          if(!map.has(k)) map.set(k,{rec:0,fat:0});
-          const o=map.get(k);
-          o.rec+=x.recepcionado;
-          o.fat+=x.faturado;
-        });
-
-      const arr=[...map.entries()].map(([k,v])=>({idade:k,...v})).sort((a,b)=>idadeKey(a.idade)-idadeKey(b.idade));
-      charts["cTop"]=new Chart(ctx,{
-        type:"bar",
-        data:{labels:arr.map(x=>x.idade),datasets:[
-          {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
-          {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
-        ]},
-        options:{
-          ...baseOptions(),
-          indexAxis:"y",
-          plugins:{
-            ...baseOptions().plugins,
-            legend:{position:"top",labels:{font:{size:12,weight:"800"}}},
-            datalabels:{display:true,anchor:"end",align:"right",color:"#0f172a",font:{size:11,weight:"800"},formatter:(v)=>v?v.toLocaleString("pt-BR"):""}
-          },
-          scales:{
-            x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.05)"}},
-            y:{ticks:{font:{size:11,weight:"700"}},grid:{display:false}}
-          }
-        }
-      });
-      el("subTop").textContent = mes
-        ? `Recepcionado vs Faturado por faixa etária • Mês: ${labelMes(mes)}`
-        : "Recepcionado vs Faturado por faixa etária para a especialidade selecionada.";
-      el("cTopWrap").style.height="360px";
-      return;
-    }
+    const source = mes ? getOciDataForMonth(mes) : dataF;
 
     const map=new Map();
     source.forEach(x=>{
       const k=x.especialidade;
-      if(!map.has(k)) map.set(k,{rec:0,fat:0});
+      if(!map.has(k)) map.set(k,{rec:0,fat:0,esp:k});
       const o=map.get(k);
       o.rec+=x.recepcionado;
       o.fat+=x.faturado;
     });
 
-    const arr=[...map.entries()].map(([k,v])=>({esp:k,...v})).sort((a,b)=>b.rec-a.rec);
-    const dynamicH=Math.max(480,arr.length*48+80); // Garantir altura mínima de 480px
-    el("cTopWrap").style.height=dynamicH+"px";
+    const arr=[...map.values()].sort((a,b)=>b.rec-a.rec);
+    const dynamicH=Math.max(480,arr.length*48+80);
+    if(el("cTopWrap")) el("cTopWrap").style.height=dynamicH+"px";
 
     charts["cTop"]=new Chart(ctx,{
       type:"bar",
-      data:{labels:arr.map(x => resumirNomeEspecialidade(x.esp)), // <-- RESUMO DOS NOMES AQUI
-            datasets:[
+      data:{labels:arr.map(x=>abbreviateEspName(x.esp, 25)),datasets:[
         {label:"Recepcionado",data:arr.map(x=>x.rec),backgroundColor:"#059669",borderRadius:6,barThickness:22},
         {label:"Faturado",data:arr.map(x=>x.fat),backgroundColor:"#b91c1c",borderRadius:6,barThickness:22}
       ]},
@@ -2323,7 +2741,7 @@
         plugins:{
           legend:{position:"top",labels:{font:{size:13,weight:"800"},padding:18}},
           datalabels:{display:true,anchor:"end",align:"right",color:"#0f172a",font:{size:11,weight:"800"},padding:{right:4},formatter:(v)=>v?v.toLocaleString("pt-BR"):""},
-          tooltip:{titleFont:{size:12,weight:"800"},bodyFont:{size:12}}
+          tooltip:{titleFont:{size:12,weight:"800"},bodyFont:{size:12},callbacks:{title:(items)=>{ const i=items[0]?.dataIndex; return i!==undefined?arr[i]?.esp||"":""; }}}
         },
         scales:{
           x:{beginAtZero:true,ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.05)"}},
@@ -2332,7 +2750,7 @@
       }
     });
 
-    el("subTop").textContent = mes
+    if(el("subTop")) el("subTop").textContent = mes
       ? `Todas as especialidades — Mês: ${labelMes(mes)} (ordenado pelo maior Recepcionado).`
       : "Todas as especialidades no período selecionado (do maior para o menor Recepcionado).";
   }
@@ -2340,7 +2758,9 @@
   // ===== GRÁFICO: Receita por Especialidade =====
   function buildReceita(){
     destroy("cReceita");
-    const ctx=el("cReceita").getContext("2d");
+    const canvas = el("cReceita");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
     if(!allData.length) {
       ctx.font = "14px Inter";
@@ -2350,20 +2770,16 @@
       return;
     }
 
-    // Usar filtro de mês específico do gráfico OU filtro global
-    const mesFiltro = receitaFilterMonth || el("fMesAno").value;
-    
-    // Obter os dados com base no mês filtrado e nas especialidades selecionadas
-    const source = getOciDataForMonth(mesFiltro);
+    const mesFiltro = receitaFilterMonth;
+    const source = mesFiltro ? getOciDataForMonth(mesFiltro) : dataF;
 
-    // Agrupar por especialidade e somar a coluna 'financeiro'
     const mapFinanceiro = new Map();
     source.forEach(item => {
       const esp = item.especialidade;
       if (!esp) return;
       
       const valor = item.financeiro || 0;
-      if (valor <= 0) return; // Ignorar valores zero ou nulos para este gráfico
+      if (valor <= 0) return;
       
       if (!mapFinanceiro.has(esp)) {
         mapFinanceiro.set(esp, 0);
@@ -2379,13 +2795,11 @@
       return;
     }
 
-    // Converter para array e ordenar por valor (maior para menor)
     const dadosArray = Array.from(mapFinanceiro, ([esp, valor]) => ({ esp, valor }))
                               .sort((a, b) => b.valor - a.valor);
     
-    // Limitar a 15 itens para não poluir o gráfico
     const dadosLimitados = dadosArray.slice(0, 15);
-    const labels = dadosLimitados.map(d => resumirNomeEspecialidade(d.esp)); // <-- RESUMO DOS NOMES AQUI
+    const labels = dadosLimitados.map(d => abbreviateEspName(d.esp, 25));
     const valores = dadosLimitados.map(d => d.valor);
 
     charts["cReceita"] = new Chart(ctx, {
@@ -2395,7 +2809,7 @@
         datasets: [{
           label: "Receita (R$)",
           data: valores,
-          backgroundColor: "#059669", // Verde
+          backgroundColor: "#059669",
           borderRadius: 6,
           barThickness: 22
         }]
@@ -2446,7 +2860,7 @@
       }
     });
 
-    el("subReceita").textContent = mesFiltro && mesFiltro !== ""
+    if(el("subReceita")) el("subReceita").textContent = mesFiltro && mesFiltro !== ""
       ? `Faturamento (R$) por especialidade • Mês: ${labelMes(mesFiltro)}`
       : "Faturamento total (R$) acumulado por especialidade (dados da coluna 'Financeiro')";
   }
@@ -2454,10 +2868,12 @@
   // ===== GRÁFICO: Distribuição no Período =====
   function buildDistribuicao(){
     destroy("cDistribuicao");
-    const ctx=el("cDistribuicao").getContext("2d");
+    const canvas = el("cDistribuicao");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
 
-    const mesFiltro = distribuicaoFilterMonth || el("fMesAno").value;
-    const rows = getOciDataForMonth(mesFiltro);
+    const mesFiltro = distribuicaoFilterMonth;
+    const rows = mesFiltro ? getOciDataForMonth(mesFiltro) : dataF;
 
     const ag = sum("agendado", rows);
     const rec = sum("recepcionado", rows);
@@ -2479,10 +2895,10 @@
         datasets: [{
           data: [ag, rec, apac, fat],
           backgroundColor: [
-            "#3b82f6",  // Azul
-            "#059669",  // Verde
-            "#d97706",  // Laranja
-            "#b91c1c"   // Vermelho sangue
+            "#3b82f6",
+            "#059669",
+            "#d97706",
+            "#b91c1c"
           ],
           borderColor: "#ffffff",
           borderWidth: 3,
@@ -2549,6 +2965,114 @@
     });
   }
 
+  // ===== NOVO GRÁFICO: Comparativo Agendados vs Faturados =====
+  function buildComparativo(){
+    destroy("cComparativo");
+    const canvas = el("cComparativo");
+    if(!canvas) return;
+    const ctx=canvas.getContext("2d");
+
+    const mapEsp = new Map();
+    dataF.forEach(item => {
+      const esp = item.especialidade;
+      if (!esp) return;
+      
+      if (!mapEsp.has(esp)) {
+        mapEsp.set(esp, { agendado: 0, faturado: 0 });
+      }
+      const o = mapEsp.get(esp);
+      o.agendado += item.agendado;
+      o.faturado += item.faturado;
+    });
+
+    if (mapEsp.size === 0) {
+      ctx.font = "14px Inter";
+      ctx.fillStyle = "#64748b";
+      ctx.textAlign = "center";
+      ctx.fillText("Sem dados para o período selecionado", ctx.canvas.width/2, ctx.canvas.height/2);
+      return;
+    }
+
+    const dadosArray = Array.from(mapEsp, ([esp, {agendado, faturado}]) => ({
+      esp,
+      agendado,
+      faturado,
+      taxa: agendado > 0 ? (faturado / agendado) * 100 : 0
+    }))
+    .sort((a, b) => b.agendado - a.agendado)
+    .slice(0, 10);
+
+    charts["cComparativo"] = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: dadosArray.map(d => abbreviateEspName(d.esp, 15)),
+        datasets: [
+          {
+            label: "Agendados",
+            data: dadosArray.map(d => d.agendado),
+            backgroundColor: "rgba(59, 130, 246, 0.2)",
+            borderColor: "#3b82f6",
+            pointBackgroundColor: "#3b82f6",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "#3b82f6",
+            borderWidth: 2
+          },
+          {
+            label: "Faturados",
+            data: dadosArray.map(d => d.faturado),
+            backgroundColor: "rgba(185, 28, 28, 0.2)",
+            borderColor: "#b91c1c",
+            pointBackgroundColor: "#b91c1c",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "#b91c1c",
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              font: { size: 12, weight: "700" },
+              usePointStyle: true,
+              pointStyle: "circle"
+            }
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => {
+                const i = items[0]?.dataIndex;
+                return i !== undefined ? dadosArray[i]?.esp || "" : "";
+              },
+              label: (ctx) => {
+                const val = ctx.raw || 0;
+                return ` ${ctx.dataset.label}: ${val.toLocaleString("pt-BR")}`;
+              }
+            }
+          },
+          datalabels: {
+            display: false
+          }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            ticks: {
+              font: { size: 10, weight: "700" },
+              callback: (v) => v.toLocaleString("pt-BR")
+            },
+            grid: { color: "rgba(2,6,23,.1)" }
+          }
+        }
+      }
+    });
+  }
+
   // ===== TABLE SORTING =====
   function sortTable(col,th){
     if(tableSort.col===col){ tableSort.dir=tableSort.dir==="asc"?"desc":"asc"; }
@@ -2558,9 +3082,12 @@
     renderTable();
   }
 
-  // ===== TABLE RENDER (AGORA COM COLUNA FINANCEIRA) =====
+  // ===== TABLE RENDER =====
   function renderTable(){
-    const q=normStr(el("tSearch").value).toLowerCase();
+    const tBody = el("tBody");
+    if(!tBody) return;
+    
+    const q=normStr(el("tSearch")?.value||"").toLowerCase();
     let rows=dataF.filter(x=>{
       if(!q) return true;
       return (x.especialidade||"").toLowerCase().includes(q) ||
@@ -2582,7 +3109,6 @@
           va=String(va||"").toLowerCase(); vb=String(vb||"").toLowerCase();
           return va.localeCompare(vb,"pt-BR")*dir;
         } else if(col==="financeiro") {
-          // Para a coluna financeira, ordenar numericamente
           return ((a.financeiro||0) - (b.financeiro||0)) * dir;
         } else {
           return ((va||0)-(vb||0))*dir;
@@ -2590,13 +3116,13 @@
       });
     }
 
-    el("tInfo").textContent=`${rows.length.toLocaleString("pt-BR")} registro(s)`;
-    const body=el("tBody");
+    if(el("tInfo")) el("tInfo").textContent=`${rows.length.toLocaleString("pt-BR")} registro(s)`;
+    
     if(!rows.length){
-      body.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`;
+      tBody.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`;
       return;
     }
-    body.innerHTML=rows.slice(0,2000).map(x=>`
+    tBody.innerHTML=rows.slice(0,2000).map(x=>`
       <tr>
         <td title="${x.especialidade}">${x.especialidade}</td>
         <td>${x.idade||"Não informado"}</td>
@@ -2626,13 +3152,15 @@
   function switchTab(id,btn){
     document.querySelectorAll(".tabContent").forEach(x=>x.classList.remove("active"));
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    el("tab-"+id).classList.add("active");
+    const tabEl = el("tab-"+id);
+    if(tabEl) tabEl.classList.add("active");
     btn.classList.add("active");
     setTimeout(()=>{ Object.values(charts).forEach(c=>c?.resize?.()); },80);
   }
 
   // ===== INIT =====
   window.addEventListener("DOMContentLoaded",()=>{
+    initEventListeners();
     loadData(false);
     loadFinData(false);
   });
