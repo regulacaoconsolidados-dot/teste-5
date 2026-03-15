@@ -1659,26 +1659,76 @@
   }
 
   // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES =====
-  function abbreviateEspName(esp, maxLength = 30) {
-    if (!esp) return "";
+function abbreviateEspName(esp, maxLength = 30) {
+  if (!esp) return "";
+  
+  // MAPEAMENTO DE ABREVIAÇÕES PERSONALIZADAS (IGUAL ESTAVA BOM ANTES)
+  const abbreviations = {
+    // Oncologia
+    "09.01.01.001-4": "CA Mama Inicial",
+    "09.01.01.002-2": "CA Mama Progressão",
+    "09.01.01.003-0": "CA Próstata Inicial",
+    "09.01.01.004-9": "CA Próstata Progressão",
+    "09.01.01.005-7": "CA Colo Investigação",
+    "09.01.01.006-5": "CA Colo Terapêutica",
+    "09.01.01.007-3": "CA Gástrico",
+    "09.01.01.008-1": "CA Colorretal",
+    "09.01.01.009-0": "CA Mama Prog I",
+    "09.01.01.010-3": "CA Mama Prog II",
+    "09.01.01.011-1": "CA Colo Terap I",
+    "09.01.01.012-0": "CA Colo Terap II",
     
-    // Primeiro, verificar se é um código/subgrupo que temos mapeado
-    for (const grupo of Object.values(GRUPOS)) {
-      for (const sub of grupo.subgrupos) {
-        if (esp.includes(sub.codigo)) {
-          // Se encontrar pelo código, extrair a parte final relevante
-          const partes = sub.nome.split(' - ');
-          if (partes.length > 1) {
-            return partes[partes.length - 1].substring(0, maxLength);
-          }
-          return sub.nome.substring(0, maxLength);
-        }
-      }
+    // Cardiologia
+    "09.02.01.001-8": "Risco Cirúrgico",
+    "09.02.01.002-6": "Avaliação Cardio",
+    "09.02.01.003-4": "SCC Inicial",
+    "09.02.01.004-2": "SCC Prog I",
+    "09.02.01.005-0": "SCC Prog II",
+    "09.02.01.006-9": "Insuf Cardíaca",
+    
+    // Oftalmologia (casos específicos que você mostrou)
+    "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS": "Oftalmo 0-8a",
+    "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS": "Oftalmo 9a+",
+    "OCI AVALIAÇÃO DE ESTRABISMO": "Estrabismo",
+    "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA": "Retinopatia Diab",
+    "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA": "Onco Oftalmo",
+    "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA": "Neuro Oftalmo",
+    "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO": "Exames c/ Sedação",
+    
+    // Tratamentos especiais para os que aparecem na sua imagem
+    "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Investigação",
+    "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA": "CA Mama Progressão",
+    "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Terapêutica"
+  };
+  
+  // Verificar se a especialidade completa corresponde a alguma abreviação
+  for (const [key, value] of Object.entries(abbreviations)) {
+    if (esp.includes(key)) {
+      return value;
     }
-    
-    if (esp.length <= maxLength) return esp;
-    return esp.substring(0, maxLength - 3) + "...";
   }
+  
+  // Se não encontrou no mapeamento, fazer abreviação automática
+  let abbr = esp
+    .replace(/^OCI\s*/i, "")
+    .replace(/AVALIAÇÃO\s*/gi, "AVAL. ")
+    .replace(/DIAGNÓSTICA\s*/gi, "DIAG. ")
+    .replace(/INICIAL\s*/gi, "INIC. ")
+    .replace(/PROGRESSÃO\s*/gi, "PROG. ")
+    .replace(/TERAPÊUTICA\s*/gi, "TERAP. ")
+    .replace(/CÂNCER DE\s*/gi, "CA ")
+    .replace(/SÍNDROME CORONARIANA CRÔNICA/gi, "SCC")
+    .replace(/INSUFICIÊNCIA CARDÍACA/gi, "IC")
+    .replace(/ORTOPEDIA\s*/gi, "ORTO ")
+    .replace(/RADIOLOGIA/gi, "RX")
+    .replace(/ULTRASSONOGRAFIA/gi, "US")
+    .replace(/TOMOGRAFIA COMPUTADORIZADA/gi, "TC")
+    .replace(/RESSONÂNCIA MAGNÉTICA/gi, "RM")
+    .replace(/\s+/g, " ").trim();
+  
+  if (abbr.length <= maxLength) return abbr;
+  return abbr.substring(0, maxLength - 3) + "...";
+}
 
   // ===== FILTER POPUP FUNCTIONS =====
   function toggleChartFilter(id, event) {
