@@ -779,7 +779,7 @@
       </div>
     </div>
 
-    <!-- Tabs - NOVA ORDEM: Visão Geral, Financeiro, Tabela OCI, Ranking Físico, Ranking Financeiro -->
+    <!-- Tabs -->
     <div class="tabs" style="margin-top:14px;">
       <button class="tab active" onclick="switchTab('visao', this)"><i class="fa-solid fa-chart-line"></i> Visão Geral</button>
       <button class="tab" onclick="switchTab('financeiro', this)"><i class="fa-solid fa-coins"></i> Financeiro</button>
@@ -929,7 +929,7 @@
           <div class="chartCard" style="background:linear-gradient(135deg, #f8fafc, #fff);">
             <div class="chartHead">
               <div>
-                <h3><i class="fa-solid fa-location-dot" style="color:#0f2f5f"></i> Posição de Contagem - Dados coletados até <span id="dataAtualizacaoContagem">13/03/2026</span></h3>
+                <h3><i class="fa-solid fa-location-dot" style="color:#0f2f5f"></i> Posição de Contagem</h3>
                 <div class="chartSub">Comparativo físico vs financeiro</div>
               </div>
             </div>
@@ -948,7 +948,7 @@
                 </div>
               </div>
 
-              <!-- Card Financeiro - AGORA NA COR VERDE -->
+              <!-- Card Financeiro - VERDE -->
               <div style="flex:1; text-align:center; padding:20px; background:rgba(5,150,105,.08); border-radius:20px;">
                 <div style="font-size:14px; font-weight:800; color:var(--muted); margin-bottom:10px;">
                   <i class="fa-solid fa-coins"></i> RANKING FINANCEIRO
@@ -973,7 +973,7 @@
               </div>
             </div>
 
-            <!-- Mini tabela comparativa - CORRIGIDA: mostra TOP 5 sem contar Contagem como um deles -->
+            <!-- Mini tabela comparativa - CORRIGIDA: 5 municípios + Contagem -->
             <div style="margin-top:20px; background:rgba(0,0,0,.02); border-radius:12px; padding:15px;">
               <div style="font-size:12px; font-weight:800; margin-bottom:10px;">📊 Top 5 vs Contagem</div>
               <div id="miniRanking" style="font-size:11px;">
@@ -985,7 +985,7 @@
       </div>
     </section>
 
-    <!-- Tab: FINANCEIRO (existente) -->
+    <!-- Tab: FINANCEIRO -->
     <section class="tabContent" id="tab-financeiro" style="margin-top:14px;">
       <div class="fin-header">
         <div class="fin-header-icon"><i class="fa-solid fa-coins"></i></div>
@@ -1329,7 +1329,7 @@
       </div>
     </section>
 
-    <!-- ABA: RANKING FINANCEIRO - AGORA COM CABEÇALHO VERDE -->
+    <!-- ABA: RANKING FINANCEIRO -->
     <section class="tabContent" id="tab-ranking-financeiro" style="margin-top:14px;">
       <div class="fin-header fin-header-ranking" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
         <div class="fin-header-icon"><i class="fa-solid fa-sack-dollar"></i></div>
@@ -1912,7 +1912,7 @@
     return 999998;
   }
 
-  // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES (CORRIGIDA - OFTALMOLOGIA FIXA) =====
+  // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES (OFTALMOLOGIA FIXA) =====
   function abbreviateEspName(esp, maxLength = 30) {
     if (!esp) return "";
     
@@ -1940,7 +1940,7 @@
       "09.02.01.005-0": "SCC Prog II",
       "09.02.01.006-9": "Insuf Cardíaca",
       
-      // Oftalmologia - CORRIGIDO: nomes fixos que não mudam
+      // Oftalmologia - FIXOS
       "09.05.01.001-9": "Oftalmo 0-8a",
       "09.05.01.002-7": "Estrabismo",
       "09.05.01.003-5": "Oftalmo 9a+",
@@ -1949,20 +1949,18 @@
       "09.05.01.006-0": "Neuro Oftalmo",
       "09.05.01.007-8": "Exames c/ Sedação",
       
-      // Outros específicos
+      // Outros
       "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Investigação",
       "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA": "CA Mama Progressão",
       "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Terapêutica"
     };
     
-    // Primeiro, verificar se a especialidade contém algum código do mapeamento
     for (const [codigo, abrev] of Object.entries(abbreviations)) {
       if (esp.includes(codigo)) {
         return abrev;
       }
     }
     
-    // Se não encontrou, fazer abreviação automática
     let abbr = esp
       .replace(/^OCI\s*/i, "")
       .replace(/AVALIAÇÃO\s*/gi, "AVAL. ")
@@ -2248,15 +2246,7 @@
       renderTable();
 
       const now=new Date();
-      const dataFormatada = now.toLocaleDateString("pt-BR");
-      el("lastUpdate").textContent=`Última atualização: ${dataFormatada} às ${now.toLocaleTimeString("pt-BR")}`;
-      
-      // Atualizar a data no cabeçalho do termômetro de Contagem
-      const dataContagem = el("dataAtualizacaoContagem");
-      if (dataContagem) {
-        dataContagem.textContent = dataFormatada;
-      }
-      
+      el("lastUpdate").textContent=`Última atualização: ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")}`;
       toast(`Dados OCI carregados: ${allData.length.toLocaleString("pt-BR")} registros.`,"success");
     }catch(err){
       console.error(err);
@@ -2420,7 +2410,7 @@
       if (el('rankParticipacao')) el('rankParticipacao').textContent = `${participacao}%`;
       if (el('rankBarra')) el('rankBarra').style.width = `${participacao}%`;
       
-      // Mini ranking - CORRIGIDO: mostra TOP 5 sem contar Contagem como um deles
+      // MINI RANKING CORRIGIDO: 5 municípios + Contagem no final
       const top5SemContagem = sorted.filter((d, i) => !d.municipio.toLowerCase().includes('contagem')).slice(0, 5);
       let miniHTML = '<div style="display:grid; grid-template-columns:30px 1fr 80px; gap:5px; font-weight:700;">';
       miniHTML += '<div>#</div><div>Município</div><div style="text-align:right">Total</div>';
@@ -2431,7 +2421,7 @@
           <div style="text-align:right; font-weight:900;">${formatBRL(m.total)}</div>
         `;
       });
-      // Linha de Contagem no final
+      // Linha de Contagem no final (SEM número)
       if (contagem) {
         miniHTML += `
           <div style="color:#0f2f5f; font-weight:900; border-top:1px dashed #ccc; padding-top:5px; margin-top:5px;">📍</div>
@@ -2482,8 +2472,8 @@
     destroy('cRankFisicoBarras');
     const ctxBar = el('cRankFisicoBarras')?.getContext('2d');
     if (ctxBar) {
-      // CORRIGIDO: ordenar do menor para o maior para que o maior fique por último
-      const top10 = [...sorted].sort((a,b) => a.total - b.total).slice(0,10);
+      // Top 10 - ordem decrescente (maior primeiro)
+      const top10 = sorted.slice(0,10);
       charts['cRankFisicoBarras'] = new Chart(ctxBar, {
         type: 'bar',
         data: {
@@ -2544,8 +2534,8 @@
     destroy('cRankFinanceiroBarras');
     const ctxBar = el('cRankFinanceiroBarras')?.getContext('2d');
     if (ctxBar) {
-      // CORRIGIDO: ordenar do menor para o maior para que o maior fique por último
-      const top10 = [...sorted].sort((a,b) => a.total - b.total).slice(0,10);
+      // Top 10 - ordem decrescente (maior primeiro)
+      const top10 = sorted.slice(0,10);
       charts['cRankFinanceiroBarras'] = new Chart(ctxBar, {
         type: 'bar',
         data: {
