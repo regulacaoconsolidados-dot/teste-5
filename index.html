@@ -642,6 +642,16 @@
       .h-title{font-size:20px}
       .h-sub{font-size:14px}
     }
+
+    /* Estilo específico para o cabeçalho do ranking financeiro */
+    .fin-header-ranking {
+      background: linear-gradient(135deg, #0a3a2a, #0f4a35) !important;
+    }
+    
+    .fin-header-ranking .fin-header-icon {
+      background: rgba(255,255,255,.16);
+      border: 1.5px solid rgba(255,255,255,.26);
+    }
   </style>
 </head>
 
@@ -769,13 +779,13 @@
       </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- Tabs - NOVA ORDEM: Visão Geral, Financeiro, Tabela OCI, Ranking Físico, Ranking Financeiro -->
     <div class="tabs" style="margin-top:14px;">
       <button class="tab active" onclick="switchTab('visao', this)"><i class="fa-solid fa-chart-line"></i> Visão Geral</button>
+      <button class="tab" onclick="switchTab('financeiro', this)"><i class="fa-solid fa-coins"></i> Financeiro</button>
+      <button class="tab" onclick="switchTab('tabela', this)"><i class="fa-solid fa-table"></i> Tabela OCI</button>
       <button class="tab" onclick="switchTab('ranking-fisico', this)"><i class="fa-solid fa-trophy"></i> Ranking Físico</button>
       <button class="tab" onclick="switchTab('ranking-financeiro', this)"><i class="fa-solid fa-sack-dollar"></i> Ranking Financeiro</button>
-      <button class="tab" onclick="switchTab('tabela', this)"><i class="fa-solid fa-table"></i> Tabela OCI</button>
-      <button class="tab" onclick="switchTab('financeiro', this)"><i class="fa-solid fa-coins"></i> Financeiro</button>
     </div>
 
     <!-- Tab: Visão Geral -->
@@ -919,7 +929,7 @@
           <div class="chartCard" style="background:linear-gradient(135deg, #f8fafc, #fff);">
             <div class="chartHead">
               <div>
-                <h3><i class="fa-solid fa-location-dot" style="color:#0f2f5f"></i> Posição de Contagem/Ranking OCI - Dados coletados até 13/03/2026</h3>
+                <h3><i class="fa-solid fa-location-dot" style="color:#0f2f5f"></i> Posição de Contagem - Dados coletados até <span id="dataAtualizacaoContagem">13/03/2026</span></h3>
                 <div class="chartSub">Comparativo físico vs financeiro</div>
               </div>
             </div>
@@ -938,12 +948,12 @@
                 </div>
               </div>
 
-              <!-- Card Financeiro -->
-              <div style="flex:1; text-align:center; padding:20px; background:rgba(15,47,95,.05); border-radius:20px;">
+              <!-- Card Financeiro - AGORA NA COR VERDE -->
+              <div style="flex:1; text-align:center; padding:20px; background:rgba(5,150,105,.08); border-radius:20px;">
                 <div style="font-size:14px; font-weight:800; color:var(--muted); margin-bottom:10px;">
                   <i class="fa-solid fa-coins"></i> RANKING FINANCEIRO
                 </div>
-                <div style="font-size:48px; font-weight:900; color:var(--primary); line-height:1;" id="rankFinanceiroPos">#0</div>
+                <div style="font-size:48px; font-weight:900; color:#059669; line-height:1;" id="rankFinanceiroPos">#0</div>
                 <div style="font-size:13px; margin-top:5px;" id="rankFinanceiroDetalhe">—</div>
                 <div style="margin-top:15px; padding:10px; background:rgba(5,150,105,.1); border-radius:12px;">
                   <div style="font-size:11px; color:var(--muted);">Total do município</div>
@@ -963,283 +973,13 @@
               </div>
             </div>
 
-            <!-- Mini tabela comparativa -->
+            <!-- Mini tabela comparativa - CORRIGIDA: mostra TOP 5 sem contar Contagem como um deles -->
             <div style="margin-top:20px; background:rgba(0,0,0,.02); border-radius:12px; padding:15px;">
-              <div style="font-size:12px; font-weight:800; margin-bottom:10px;">📊 Top 4 vs Contagem</div>
+              <div style="font-size:12px; font-weight:800; margin-bottom:10px;">📊 Top 5 vs Contagem</div>
               <div id="miniRanking" style="font-size:11px;">
                 Carregando...
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOVA ABA: RANKING FÍSICO -->
-    <section class="tabContent" id="tab-ranking-fisico" style="margin-top:14px;">
-      <div class="fin-header" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
-        <div class="fin-header-icon"><i class="fa-solid fa-dumbbell"></i></div>
-        <div class="fin-header-body">
-          <div class="fin-header-title">Ranking Físico por Município</div>
-          <div class="fin-header-sub">Procedimentos para Ofertas de Cuidados Integrados</div>
-        </div>
-        <div class="fin-header-right">
-          <div class="fin-header-update" id="rankingFisicoUpdate">Carregando...</div>
-        </div>
-      </div>
-
-      <!-- Cards de destaque Contagem -->
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:14px;">
-        <div class="kpi fin1">
-          <div class="kpiIcon"><i class="fa-solid fa-crown"></i></div>
-          <div>
-            <div class="label">Posição de Contagem</div>
-            <div class="val" id="fisicoPosicao">#0</div>
-            <div class="sub" id="fisicoPosicaoSub">—</div>
-          </div>
-        </div>
-        <div class="kpi fin2">
-          <div class="kpiIcon"><i class="fa-solid fa-chart-line"></i></div>
-          <div>
-            <div class="label">Total de Procedimentos</div>
-            <div class="val" id="fisicoTotal">0</div>
-            <div class="sub" id="fisicoTotalSub">Contagem</div>
-          </div>
-        </div>
-        <div class="kpi fin3">
-          <div class="kpiIcon"><i class="fa-solid fa-percent"></i></div>
-          <div>
-            <div class="label">Participação</div>
-            <div class="val" id="fisicoParticipacao">0%</div>
-            <div class="sub" id="fisicoParticipacaoSub">do total geral</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gráficos -->
-      <div class="row2eq" style="margin-top:14px;">
-        <div class="chartCard">
-          <div class="chartHead">
-            <h3>Evolução Mensal - Contagem vs Top 5</h3>
-          </div>
-          <div class="chartWrap" style="height:300px;">
-            <canvas id="cRankFisicoEvolucao"></canvas>
-          </div>
-        </div>
-        <div class="chartCard">
-          <div class="chartHead">
-            <h3>Top 10 Municípios (Total Acumulado)</h3>
-          </div>
-          <div class="chartWrap" style="height:300px;">
-            <canvas id="cRankFisicoBarras"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabela detalhada -->
-      <div class="card section" style="margin-top:14px;">
-        <div class="tableTop">
-          <div class="sectionTitle"><i class="fa-solid fa-table"></i> Ranking Completo - Físico</div>
-          <div class="search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input id="tSearchFisico" placeholder="Buscar município..." />
-          </div>
-        </div>
-        <div style="overflow:auto; max-height:400px;">
-          <table>
-            <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Município</th>
-                <th>2025/ago</th>
-                <th>2025/set</th>
-                <th>2025/out</th>
-                <th>2025/nov</th>
-                <th>2025/dez</th>
-                <th>2026/jan</th>
-                <th>Total</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody id="tBodyFisico"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOVA ABA: RANKING FINANCEIRO -->
-    <section class="tabContent" id="tab-ranking-financeiro" style="margin-top:14px;">
-      <div class="fin-header" style="background:linear-gradient(135deg, #1a3a5f, #1e4a7a);">
-        <div class="fin-header-icon"><i class="fa-solid fa-sack-dollar"></i></div>
-        <div class="fin-header-body">
-          <div class="fin-header-title">Ranking Financeiro por Município</div>
-          <div class="fin-header-sub">Valores em R$ - Procedimentos OCI</div>
-        </div>
-        <div class="fin-header-right">
-          <div class="fin-header-update" id="rankingFinanceiroUpdate">Carregando...</div>
-        </div>
-      </div>
-
-      <!-- Cards de destaque Contagem -->
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:14px;">
-        <div class="kpi fin1">
-          <div class="kpiIcon"><i class="fa-solid fa-crown"></i></div>
-          <div>
-            <div class="label">Posição de Contagem</div>
-            <div class="val" id="financeiroPosicao">#0</div>
-            <div class="sub" id="financeiroPosicaoSub">—</div>
-          </div>
-        </div>
-        <div class="kpi fin2">
-          <div class="kpiIcon"><i class="fa-solid fa-coins"></i></div>
-          <div>
-            <div class="label">Total Financeiro</div>
-            <div class="val" id="financeiroTotal">R$ 0</div>
-            <div class="sub" id="financeiroTotalSub">Contagem</div>
-          </div>
-        </div>
-        <div class="kpi fin3">
-          <div class="kpiIcon"><i class="fa-solid fa-percent"></i></div>
-          <div>
-            <div class="label">Participação</div>
-            <div class="val" id="financeiroParticipacao">0%</div>
-            <div class="sub" id="financeiroParticipacaoSub">do total geral</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gráficos -->
-      <div class="row2eq" style="margin-top:14px;">
-        <div class="chartCard">
-          <div class="chartHead">
-            <h3>Evolução Mensal - Contagem vs Top 5 (R$)</h3>
-          </div>
-          <div class="chartWrap" style="height:300px;">
-            <canvas id="cRankFinanceiroEvolucao"></canvas>
-          </div>
-        </div>
-        <div class="chartCard">
-          <div class="chartHead">
-            <h3>Top 10 Municípios (Receita Total)</h3>
-          </div>
-          <div class="chartWrap" style="height:300px;">
-            <canvas id="cRankFinanceiroBarras"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabela detalhada -->
-      <div class="card section" style="margin-top:14px;">
-        <div class="tableTop">
-          <div class="sectionTitle"><i class="fa-solid fa-table"></i> Ranking Completo - Financeiro (R$)</div>
-          <div class="search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input id="tSearchFinanceiro" placeholder="Buscar município..." />
-          </div>
-        </div>
-        <div style="overflow:auto; max-height:400px;">
-          <table>
-            <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Município</th>
-                <th>2025/ago</th>
-                <th>2025/set</th>
-                <th>2025/out</th>
-                <th>2025/nov</th>
-                <th>2025/dez</th>
-                <th>2026/jan</th>
-                <th>Total</th>
-                <th>%</th>
-              </tr>
-            </thead>
-            <tbody id="tBodyFinanceiro"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tab: Tabela OCI (antiga Tabela) -->
-    <section class="tabContent" id="tab-tabela" style="margin-top:14px;">
-      <div class="card section">
-        <div class="tableTop">
-          <div class="sectionTitle" style="margin:0"><i class="fa-solid fa-table" style="color:var(--accent)"></i> Tabela filtrada (dados reais)</div>
-          <div class="search">
-            <i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i>
-            <input id="tSearch" placeholder="Buscar (especialidade, idade, mês)..." />
-          </div>
-          <div class="muted" id="tInfo">—</div>
-        </div>
-        <div style="overflow:auto; border-radius:12px; border:1px solid var(--border); max-height:520px;">
-          <table>
-            <thead>
-              <tr>
-                <th data-col="especialidade" onclick="sortTable('especialidade', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Especialidade</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="idade" onclick="sortTable('idade', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Idade</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="mesKey" onclick="sortTable('mesKey', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Mês/Ano</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="agendado" onclick="sortTable('agendado', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Agendado</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="recepcionado" onclick="sortTable('recepcionado', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Recepcionado</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="apac" onclick="sortTable('apac', this)">
-                  <div class="th-filter-wrapper">
-                    <span>APAC</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="faturado" onclick="sortTable('faturado', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Faturado</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-                <th data-col="financeiro" onclick="sortTable('financeiro', this)">
-                  <div class="th-filter-wrapper">
-                    <span>Financeiro (R$)</span>
-                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span>
-                  </div>
-                  <span class="sort-icon"></span>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="tBody"></tbody>
-          </table>
-        </div>
-        <div id="columnFilterPopup" class="chart-filter-popup" style="position:fixed;z-index:2000;">
-          <select id="colFilterSelect" multiple size="5" style="width:100%;margin-bottom:8px;"></select>
-          <div class="filter-actions">
-            <button class="btn-filter-apply" onclick="applyColumnFilter()">Aplicar</button>
-            <button class="btn-filter-clear" onclick="clearColumnFilter()">Limpar</button>
           </div>
         </div>
       </div>
@@ -1410,6 +1150,276 @@
         </div>
       </div>
     </section>
+
+    <!-- Tab: Tabela OCI -->
+    <section class="tabContent" id="tab-tabela" style="margin-top:14px;">
+      <div class="card section">
+        <div class="tableTop">
+          <div class="sectionTitle" style="margin:0"><i class="fa-solid fa-table" style="color:var(--accent)"></i> Tabela filtrada (dados reais)</div>
+          <div class="search">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i>
+            <input id="tSearch" placeholder="Buscar (especialidade, idade, mês)..." />
+          </div>
+          <div class="muted" id="tInfo">—</div>
+        </div>
+        <div style="overflow:auto; border-radius:12px; border:1px solid var(--border); max-height:520px;">
+          <table>
+            <thead>
+              <tr>
+                <th data-col="especialidade" onclick="sortTable('especialidade', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Especialidade</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="idade" onclick="sortTable('idade', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Idade</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="mesKey" onclick="sortTable('mesKey', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Mês/Ano</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="agendado" onclick="sortTable('agendado', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Agendado</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="recepcionado" onclick="sortTable('recepcionado', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Recepcionado</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="apac" onclick="sortTable('apac', this)">
+                  <div class="th-filter-wrapper">
+                    <span>APAC</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="faturado" onclick="sortTable('faturado', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Faturado</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+                <th data-col="financeiro" onclick="sortTable('financeiro', this)">
+                  <div class="th-filter-wrapper">
+                    <span>Financeiro (R$)</span>
+                    <span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span>
+                  </div>
+                  <span class="sort-icon"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+          </table>
+        </div>
+        <div id="columnFilterPopup" class="chart-filter-popup" style="position:fixed;z-index:2000;">
+          <select id="colFilterSelect" multiple size="5" style="width:100%;margin-bottom:8px;"></select>
+          <div class="filter-actions">
+            <button class="btn-filter-apply" onclick="applyColumnFilter()">Aplicar</button>
+            <button class="btn-filter-clear" onclick="clearColumnFilter()">Limpar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA: RANKING FÍSICO -->
+    <section class="tabContent" id="tab-ranking-fisico" style="margin-top:14px;">
+      <div class="fin-header" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
+        <div class="fin-header-icon"><i class="fa-solid fa-dumbbell"></i></div>
+        <div class="fin-header-body">
+          <div class="fin-header-title">Ranking Físico por Município</div>
+          <div class="fin-header-sub">Procedimentos para Ofertas de Cuidados Integrados</div>
+        </div>
+        <div class="fin-header-right">
+          <div class="fin-header-update" id="rankingFisicoUpdate">Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Cards de destaque Contagem -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:14px;">
+        <div class="kpi fin1">
+          <div class="kpiIcon"><i class="fa-solid fa-crown"></i></div>
+          <div>
+            <div class="label">Posição de Contagem</div>
+            <div class="val" id="fisicoPosicao">#0</div>
+            <div class="sub" id="fisicoPosicaoSub">—</div>
+          </div>
+        </div>
+        <div class="kpi fin2">
+          <div class="kpiIcon"><i class="fa-solid fa-chart-line"></i></div>
+          <div>
+            <div class="label">Total de Procedimentos</div>
+            <div class="val" id="fisicoTotal">0</div>
+            <div class="sub" id="fisicoTotalSub">Contagem</div>
+          </div>
+        </div>
+        <div class="kpi fin3">
+          <div class="kpiIcon"><i class="fa-solid fa-percent"></i></div>
+          <div>
+            <div class="label">Participação</div>
+            <div class="val" id="fisicoParticipacao">0%</div>
+            <div class="sub" id="fisicoParticipacaoSub">do total geral</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="row2eq" style="margin-top:14px;">
+        <div class="chartCard">
+          <div class="chartHead">
+            <h3>Evolução Mensal - Contagem vs Top 5</h3>
+          </div>
+          <div class="chartWrap" style="height:300px;">
+            <canvas id="cRankFisicoEvolucao"></canvas>
+          </div>
+        </div>
+        <div class="chartCard">
+          <div class="chartHead">
+            <h3>Top 10 Municípios (Total Acumulado)</h3>
+          </div>
+          <div class="chartWrap" style="height:300px;">
+            <canvas id="cRankFisicoBarras"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela detalhada -->
+      <div class="card section" style="margin-top:14px;">
+        <div class="tableTop">
+          <div class="sectionTitle"><i class="fa-solid fa-table"></i> Ranking Completo - Físico</div>
+          <div class="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="tSearchFisico" placeholder="Buscar município..." />
+          </div>
+        </div>
+        <div style="overflow:auto; max-height:400px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Município</th>
+                <th>2025/ago</th>
+                <th>2025/set</th>
+                <th>2025/out</th>
+                <th>2025/nov</th>
+                <th>2025/dez</th>
+                <th>2026/jan</th>
+                <th>Total</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody id="tBodyFisico"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA: RANKING FINANCEIRO - AGORA COM CABEÇALHO VERDE -->
+    <section class="tabContent" id="tab-ranking-financeiro" style="margin-top:14px;">
+      <div class="fin-header fin-header-ranking" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
+        <div class="fin-header-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="fin-header-body">
+          <div class="fin-header-title">Ranking Financeiro por Município</div>
+          <div class="fin-header-sub">Valores em R$ - Procedimentos OCI</div>
+        </div>
+        <div class="fin-header-right">
+          <div class="fin-header-update" id="rankingFinanceiroUpdate">Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Cards de destaque Contagem -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:14px;">
+        <div class="kpi fin1">
+          <div class="kpiIcon"><i class="fa-solid fa-crown"></i></div>
+          <div>
+            <div class="label">Posição de Contagem</div>
+            <div class="val" id="financeiroPosicao">#0</div>
+            <div class="sub" id="financeiroPosicaoSub">—</div>
+          </div>
+        </div>
+        <div class="kpi fin2">
+          <div class="kpiIcon"><i class="fa-solid fa-coins"></i></div>
+          <div>
+            <div class="label">Total Financeiro</div>
+            <div class="val" id="financeiroTotal">R$ 0</div>
+            <div class="sub" id="financeiroTotalSub">Contagem</div>
+          </div>
+        </div>
+        <div class="kpi fin3">
+          <div class="kpiIcon"><i class="fa-solid fa-percent"></i></div>
+          <div>
+            <div class="label">Participação</div>
+            <div class="val" id="financeiroParticipacao">0%</div>
+            <div class="sub" id="financeiroParticipacaoSub">do total geral</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="row2eq" style="margin-top:14px;">
+        <div class="chartCard">
+          <div class="chartHead">
+            <h3>Evolução Mensal - Contagem vs Top 5 (R$)</h3>
+          </div>
+          <div class="chartWrap" style="height:300px;">
+            <canvas id="cRankFinanceiroEvolucao"></canvas>
+          </div>
+        </div>
+        <div class="chartCard">
+          <div class="chartHead">
+            <h3>Top 10 Municípios (Receita Total)</h3>
+          </div>
+          <div class="chartWrap" style="height:300px;">
+            <canvas id="cRankFinanceiroBarras"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela detalhada -->
+      <div class="card section" style="margin-top:14px;">
+        <div class="tableTop">
+          <div class="sectionTitle"><i class="fa-solid fa-table"></i> Ranking Completo - Financeiro (R$)</div>
+          <div class="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="tSearchFinanceiro" placeholder="Buscar município..." />
+          </div>
+        </div>
+        <div style="overflow:auto; max-height:400px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Município</th>
+                <th>2025/ago</th>
+                <th>2025/set</th>
+                <th>2025/out</th>
+                <th>2025/nov</th>
+                <th>2025/dez</th>
+                <th>2026/jan</th>
+                <th>Total</th>
+                <th>%</th>
+              </tr>
+            </thead>
+            <tbody id="tBodyFinanceiro"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
 
 <script>
@@ -1548,7 +1558,7 @@
 
   // ===== EVENT LISTENERS =====
   function initEventListeners() {
-    el("btnRefresh").addEventListener("click", () => { loadData(true); loadFinData(true); });
+    el("btnRefresh").addEventListener("click", () => { loadData(true); loadFinData(true); loadRankingFisico(); loadRankingFinanceiro(); });
     el("btnExcel").addEventListener("click", exportExcel);
     el("btnClear").addEventListener("click", clearFilters);
     el("tSearch").addEventListener("input", renderTable);
@@ -1902,7 +1912,7 @@
     return 999998;
   }
 
-  // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES =====
+  // ===== FUNÇÃO PARA ABREVIAR NOMES DE ESPECIALIDADES (CORRIGIDA - OFTALMOLOGIA FIXA) =====
   function abbreviateEspName(esp, maxLength = 30) {
     if (!esp) return "";
     
@@ -1930,27 +1940,29 @@
       "09.02.01.005-0": "SCC Prog II",
       "09.02.01.006-9": "Insuf Cardíaca",
       
-      // Oftalmologia
-      "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS": "Oftalmo 0-8a",
-      "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS": "Oftalmo 9a+",
-      "OCI AVALIAÇÃO DE ESTRABISMO": "Estrabismo",
-      "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA": "Retinopatia Diab",
-      "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA": "Onco Oftalmo",
-      "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA": "Neuro Oftalmo",
-      "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO": "Exames c/ Sedação",
+      // Oftalmologia - CORRIGIDO: nomes fixos que não mudam
+      "09.05.01.001-9": "Oftalmo 0-8a",
+      "09.05.01.002-7": "Estrabismo",
+      "09.05.01.003-5": "Oftalmo 9a+",
+      "09.05.01.004-3": "Retinopatia Diab",
+      "09.05.01.005-1": "Onco Oftalmo",
+      "09.05.01.006-0": "Neuro Oftalmo",
+      "09.05.01.007-8": "Exames c/ Sedação",
       
-      // Tratamentos especiais
+      // Outros específicos
       "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Investigação",
       "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA": "CA Mama Progressão",
       "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO": "CA Colo Terapêutica"
     };
     
-    for (const [key, value] of Object.entries(abbreviations)) {
-      if (esp.includes(key)) {
-        return value;
+    // Primeiro, verificar se a especialidade contém algum código do mapeamento
+    for (const [codigo, abrev] of Object.entries(abbreviations)) {
+      if (esp.includes(codigo)) {
+        return abrev;
       }
     }
     
+    // Se não encontrou, fazer abreviação automática
     let abbr = esp
       .replace(/^OCI\s*/i, "")
       .replace(/AVALIAÇÃO\s*/gi, "AVAL. ")
@@ -1959,13 +1971,6 @@
       .replace(/PROGRESSÃO\s*/gi, "PROG. ")
       .replace(/TERAPÊUTICA\s*/gi, "TERAP. ")
       .replace(/CÂNCER DE\s*/gi, "CA ")
-      .replace(/SÍNDROME CORONARIANA CRÔNICA/gi, "SCC")
-      .replace(/INSUFICIÊNCIA CARDÍACA/gi, "IC")
-      .replace(/ORTOPEDIA\s*/gi, "ORTO ")
-      .replace(/RADIOLOGIA/gi, "RX")
-      .replace(/ULTRASSONOGRAFIA/gi, "US")
-      .replace(/TOMOGRAFIA COMPUTADORIZADA/gi, "TC")
-      .replace(/RESSONÂNCIA MAGNÉTICA/gi, "RM")
       .replace(/\s+/g, " ").trim();
     
     if (abbr.length <= maxLength) return abbr;
@@ -2243,7 +2248,15 @@
       renderTable();
 
       const now=new Date();
-      el("lastUpdate").textContent=`Última atualização: ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")}`;
+      const dataFormatada = now.toLocaleDateString("pt-BR");
+      el("lastUpdate").textContent=`Última atualização: ${dataFormatada} às ${now.toLocaleTimeString("pt-BR")}`;
+      
+      // Atualizar a data no cabeçalho do termômetro de Contagem
+      const dataContagem = el("dataAtualizacaoContagem");
+      if (dataContagem) {
+        dataContagem.textContent = dataFormatada;
+      }
+      
       toast(`Dados OCI carregados: ${allData.length.toLocaleString("pt-BR")} registros.`,"success");
     }catch(err){
       console.error(err);
@@ -2407,18 +2420,25 @@
       if (el('rankParticipacao')) el('rankParticipacao').textContent = `${participacao}%`;
       if (el('rankBarra')) el('rankBarra').style.width = `${participacao}%`;
       
-      // Mini ranking
-      const top5 = sorted.slice(0,5);
+      // Mini ranking - CORRIGIDO: mostra TOP 5 sem contar Contagem como um deles
+      const top5SemContagem = sorted.filter((d, i) => !d.municipio.toLowerCase().includes('contagem')).slice(0, 5);
       let miniHTML = '<div style="display:grid; grid-template-columns:30px 1fr 80px; gap:5px; font-weight:700;">';
       miniHTML += '<div>#</div><div>Município</div><div style="text-align:right">Total</div>';
-      top5.forEach((m, i) => {
-        const isContagem = m.municipio.toLowerCase().includes('contagem');
+      top5SemContagem.forEach((m, i) => {
         miniHTML += `
-          <div style="color:${isContagem ? '#0f2f5f' : '#64748b'}; font-weight:${isContagem ? '900' : '700'}">${i+1}</div>
-          <div style="color:${isContagem ? '#0f2f5f' : 'inherit'}; font-weight:${isContagem ? '900' : '700'}">${isContagem ? '📍 CONTAGEM' : m.municipio.substring(0,20)}</div>
+          <div style="color:#64748b; font-weight:700">${i+1}</div>
+          <div style="color:inherit; font-weight:700">${m.municipio.substring(0,20)}</div>
           <div style="text-align:right; font-weight:900;">${formatBRL(m.total)}</div>
         `;
       });
+      // Linha de Contagem no final
+      if (contagem) {
+        miniHTML += `
+          <div style="color:#0f2f5f; font-weight:900; border-top:1px dashed #ccc; padding-top:5px; margin-top:5px;">📍</div>
+          <div style="color:#0f2f5f; font-weight:900; border-top:1px dashed #ccc; padding-top:5px; margin-top:5px;">CONTAGEM</div>
+          <div style="color:#0f2f5f; font-weight:900; border-top:1px dashed #ccc; padding-top:5px; margin-top:5px; text-align:right;">${formatBRL(contagem.total)}</div>
+        `;
+      }
       miniHTML += '</div>';
       if (el('miniRanking')) el('miniRanking').innerHTML = miniHTML;
     }
@@ -2462,7 +2482,8 @@
     destroy('cRankFisicoBarras');
     const ctxBar = el('cRankFisicoBarras')?.getContext('2d');
     if (ctxBar) {
-      const top10 = sorted.slice(0,10);
+      // CORRIGIDO: ordenar do menor para o maior para que o maior fique por último
+      const top10 = [...sorted].sort((a,b) => a.total - b.total).slice(0,10);
       charts['cRankFisicoBarras'] = new Chart(ctxBar, {
         type: 'bar',
         data: {
@@ -2523,7 +2544,8 @@
     destroy('cRankFinanceiroBarras');
     const ctxBar = el('cRankFinanceiroBarras')?.getContext('2d');
     if (ctxBar) {
-      const top10 = sorted.slice(0,10);
+      // CORRIGIDO: ordenar do menor para o maior para que o maior fique por último
+      const top10 = [...sorted].sort((a,b) => a.total - b.total).slice(0,10);
       charts['cRankFinanceiroBarras'] = new Chart(ctxBar, {
         type: 'bar',
         data: {
