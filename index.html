@@ -930,7 +930,7 @@
             <div class="chartHead">
               <div>
                 <h3><i class="fa-solid fa-location-dot" style="color:#0f2f5f"></i> Posição de Contagem</h3>
-                <div class="chartSub">Comparativo físico vs financeiro</div>
+                <div class="chartSub">Comparativo físico vs financeiro (último mês disponível)</div>
               </div>
             </div>
             
@@ -943,7 +943,7 @@
                 <div style="font-size:48px; font-weight:900; color:var(--primary); line-height:1;" id="rankFisicoPos">#0</div>
                 <div style="font-size:13px; margin-top:5px;" id="rankFisicoDetalhe">—</div>
                 <div style="margin-top:15px; padding:10px; background:rgba(5,150,105,.1); border-radius:12px;">
-                  <div style="font-size:11px; color:var(--muted);">Total do município</div>
+                  <div style="font-size:11px; color:var(--muted);" id="rankFisicoLabel">Total do último mês</div>
                   <div style="font-size:20px; font-weight:900; color:#059669;" id="rankFisicoTotal">0</div>
                 </div>
               </div>
@@ -956,7 +956,7 @@
                 <div style="font-size:48px; font-weight:900; color:#059669; line-height:1;" id="rankFinanceiroPos">#0</div>
                 <div style="font-size:13px; margin-top:5px;" id="rankFinanceiroDetalhe">—</div>
                 <div style="margin-top:15px; padding:10px; background:rgba(5,150,105,.1); border-radius:12px;">
-                  <div style="font-size:11px; color:var(--muted);">Total do município</div>
+                  <div style="font-size:11px; color:var(--muted);" id="rankFinanceiroLabel">Total do último mês</div>
                   <div style="font-size:20px; font-weight:900; color:#059669;" id="rankFinanceiroTotal">R$ 0</div>
                 </div>
               </div>
@@ -973,7 +973,7 @@
               </div>
             </div>
 
-            <!-- Mini tabela comparativa - CORRIGIDA: 5 municípios + Contagem -->
+            <!-- Mini tabela comparativa - 5 municípios + Contagem -->
             <div style="margin-top:20px; background:rgba(0,0,0,.02); border-radius:12px; padding:15px;">
               <div style="font-size:12px; font-weight:800; margin-bottom:10px;">📊 Top 5 vs Contagem</div>
               <div id="miniRanking" style="font-size:11px;">
@@ -1237,7 +1237,7 @@
       </div>
     </section>
 
-    <!-- ABA: RANKING FÍSICO -->
+    <!-- ABA: RANKING FÍSICO (totalmente dinâmico) -->
     <section class="tabContent" id="tab-ranking-fisico" style="margin-top:14px;">
       <div class="fin-header" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
         <div class="fin-header-icon"><i class="fa-solid fa-dumbbell"></i></div>
@@ -1308,19 +1308,10 @@
           </div>
         </div>
         <div style="overflow:auto; max-height:400px;">
-          <table>
+          <table id="tabelaFisico">
             <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Município</th>
-                <th>2025/ago</th>
-                <th>2025/set</th>
-                <th>2025/out</th>
-                <th>2025/nov</th>
-                <th>2025/dez</th>
-                <th>2026/jan</th>
-                <th>Total</th>
-                <th>%</th>
+              <tr id="cabecalhoFisico">
+                <!-- Cabeçalho será gerado dinamicamente -->
               </tr>
             </thead>
             <tbody id="tBodyFisico"></tbody>
@@ -1329,7 +1320,7 @@
       </div>
     </section>
 
-    <!-- ABA: RANKING FINANCEIRO -->
+    <!-- ABA: RANKING FINANCEIRO (totalmente dinâmico) -->
     <section class="tabContent" id="tab-ranking-financeiro" style="margin-top:14px;">
       <div class="fin-header fin-header-ranking" style="background:linear-gradient(135deg, #0a3a2a, #0f4a35);">
         <div class="fin-header-icon"><i class="fa-solid fa-sack-dollar"></i></div>
@@ -1400,19 +1391,10 @@
           </div>
         </div>
         <div style="overflow:auto; max-height:400px;">
-          <table>
+          <table id="tabelaFinanceiro">
             <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Município</th>
-                <th>2025/ago</th>
-                <th>2025/set</th>
-                <th>2025/out</th>
-                <th>2025/nov</th>
-                <th>2025/dez</th>
-                <th>2026/jan</th>
-                <th>Total</th>
-                <th>%</th>
+              <tr id="cabecalhoFinanceiro">
+                <!-- Cabeçalho será gerado dinamicamente -->
               </tr>
             </thead>
             <tbody id="tBodyFinanceiro"></tbody>
@@ -2304,7 +2286,7 @@
     }
   }
 
-  // ===== LOAD RANKING DATA =====
+  // ===== LOAD RANKING DATA - VERSÃO ULTRA DINÂMICA =====
   async function loadRankingFisico() {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1342049672`;
@@ -2312,17 +2294,54 @@
       const csv = await res.text();
       const parsed = Papa.parse(csv, {header:false, skipEmptyLines:true});
       
+      // Pega o cabeçalho (linha 2) para saber quais meses existem
+      const cabecalho = parsed.data[1];
+      const mesesDisponiveis = [];
+      
+      // Mapeia TODAS as colunas que têm mês (do 1 até o fim)
+      for (let i = 1; i < cabecalho.length; i++) {
+        if (cabecalho[i] && cabecalho[i].trim() !== '') {
+          const nomeMes = cabecalho[i].trim();
+          // Converte "2025/ago" para "ago25"
+          const partes = nomeMes.split('/');
+          if (partes.length === 2) {
+            const ano = partes[0].substring(2);
+            const mes = partes[1].substring(0,3);
+            mesesDisponiveis.push({
+              coluna: i,
+              nome: `${mes}${ano}`,
+              rotulo: nomeMes,
+              ano: partes[0],
+              mes: mes
+            });
+          }
+        }
+      }
+      
+      // Ordena os meses cronologicamente
+      mesesDisponiveis.sort((a, b) => {
+        if (a.ano !== b.ano) return a.ano - b.ano;
+        const meses = {jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
+        return meses[a.mes] - meses[b.mes];
+      });
+      
+      // Guarda os meses para usar nos gráficos
+      window.mesesRanking = mesesDisponiveis;
+      window.ultimoMes = mesesDisponiveis[mesesDisponiveis.length - 1];
+      
       rankingFisicoData = parsed.data.slice(2).map(row => {
         const municipio = row[0]?.trim() || '';
-        const meses = {
-          ago2025: parseInt(String(row[1] || '0').replace(/\./g,'')) || 0,
-          set2025: parseInt(String(row[2] || '0').replace(/\./g,'')) || 0,
-          out2025: parseInt(String(row[3] || '0').replace(/\./g,'')) || 0,
-          nov2025: parseInt(String(row[4] || '0').replace(/\./g,'')) || 0,
-          dez2025: parseInt(String(row[5] || '0').replace(/\./g,'')) || 0,
-          jan2026: parseInt(String(row[6] || '0').replace(/\./g,'')) || 0
-        };
-        const total = parseInt(String(row[7] || '0').replace(/\./g,'')) || 0;
+        const meses = {};
+        
+        mesesDisponiveis.forEach(m => {
+          const valor = String(row[m.coluna] || '0')
+            .replace(/\./g, '')
+            .replace(',', '.');
+          meses[m.nome] = parseInt(valor) || 0;
+        });
+        
+        const total = Object.values(meses).reduce((acc, val) => acc + val, 0);
+        
         return { municipio, ...meses, total };
       }).filter(d => d.municipio && d.municipio !== 'Município gestor');
       
@@ -2340,17 +2359,50 @@
       const csv = await res.text();
       const parsed = Papa.parse(csv, {header:false, skipEmptyLines:true});
       
+      const cabecalho = parsed.data[1];
+      const mesesDisponiveis = [];
+      
+      for (let i = 1; i < cabecalho.length; i++) {
+        if (cabecalho[i] && cabecalho[i].trim() !== '') {
+          const nomeMes = cabecalho[i].trim();
+          const partes = nomeMes.split('/');
+          if (partes.length === 2) {
+            const ano = partes[0].substring(2);
+            const mes = partes[1].substring(0,3);
+            mesesDisponiveis.push({
+              coluna: i,
+              nome: `${mes}${ano}`,
+              rotulo: nomeMes,
+              ano: partes[0],
+              mes: mes
+            });
+          }
+        }
+      }
+      
+      mesesDisponiveis.sort((a, b) => {
+        if (a.ano !== b.ano) return a.ano - b.ano;
+        const meses = {jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
+        return meses[a.mes] - meses[b.mes];
+      });
+      
+      window.mesesRankingFinanceiro = mesesDisponiveis;
+      window.ultimoMesFinanceiro = mesesDisponiveis[mesesDisponiveis.length - 1];
+      
       rankingFinanceiroData = parsed.data.slice(2).map(row => {
         const municipio = row[0]?.trim() || '';
-        const meses = {
-          ago2025: parseFloat(String(row[1] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0,
-          set2025: parseFloat(String(row[2] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0,
-          out2025: parseFloat(String(row[3] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0,
-          nov2025: parseFloat(String(row[4] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0,
-          dez2025: parseFloat(String(row[5] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0,
-          jan2026: parseFloat(String(row[6] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0
-        };
-        const total = parseFloat(String(row[7] || '0').replace('R$','').replace(/\./g,'').replace(',','.')) || 0;
+        const meses = {};
+        
+        mesesDisponiveis.forEach(m => {
+          const valor = String(row[m.coluna] || '0')
+            .replace('R$', '')
+            .replace(/\./g, '')
+            .replace(',', '.');
+          meses[m.nome] = parseFloat(valor) || 0;
+        });
+        
+        const total = Object.values(meses).reduce((acc, val) => acc + val, 0);
+        
         return { municipio, ...meses, total };
       }).filter(d => d.municipio && d.municipio !== 'Município gestor');
       
@@ -2362,7 +2414,7 @@
   }
 
   function atualizarRankingFisico() {
-    if (!rankingFisicoData.length) return;
+    if (!rankingFisicoData.length || !window.ultimoMes) return;
     
     const sorted = [...rankingFisicoData].sort((a,b) => b.total - a.total);
     const contagemIndex = sorted.findIndex(d => d.municipio.toLowerCase().includes('contagem'));
@@ -2372,14 +2424,19 @@
       const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
       const participacao = ((contagem.total / totalGeral) * 100).toFixed(1);
       
+      // Pega o valor do ÚLTIMO MÊS disponível
+      const ultimoMesValor = contagem[window.ultimoMes.nome] || 0;
+      
       if (el('fisicoPosicao')) el('fisicoPosicao').textContent = `#${contagemIndex + 1}`;
       if (el('fisicoPosicaoSub')) el('fisicoPosicaoSub').textContent = `${sorted.length} municípios`;
       if (el('fisicoTotal')) el('fisicoTotal').textContent = contagem.total.toLocaleString('pt-BR');
       if (el('fisicoParticipacao')) el('fisicoParticipacao').textContent = `${participacao}%`;
       
+      // Cards do termômetro mostram o ÚLTIMO MÊS
       if (el('rankFisicoPos')) el('rankFisicoPos').textContent = `#${contagemIndex + 1}`;
       if (el('rankFisicoDetalhe')) el('rankFisicoDetalhe').textContent = `${contagemIndex + 1}º de ${sorted.length}`;
-      if (el('rankFisicoTotal')) el('rankFisicoTotal').textContent = contagem.total.toLocaleString('pt-BR');
+      if (el('rankFisicoTotal')) el('rankFisicoTotal').textContent = ultimoMesValor.toLocaleString('pt-BR');
+      if (el('rankFisicoLabel')) el('rankFisicoLabel').textContent = `Total (${window.ultimoMes.rotulo})`;
     }
     
     buildRankingFisicoGraficos(sorted);
@@ -2388,7 +2445,7 @@
   }
 
   function atualizarRankingFinanceiro() {
-    if (!rankingFinanceiroData.length) return;
+    if (!rankingFinanceiroData.length || !window.ultimoMesFinanceiro) return;
     
     const sorted = [...rankingFinanceiroData].sort((a,b) => b.total - a.total);
     const contagemIndex = sorted.findIndex(d => d.municipio.toLowerCase().includes('contagem'));
@@ -2398,6 +2455,8 @@
       const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
       const participacao = ((contagem.total / totalGeral) * 100).toFixed(1);
       
+      const ultimoMesValor = contagem[window.ultimoMesFinanceiro.nome] || 0;
+      
       if (el('financeiroPosicao')) el('financeiroPosicao').textContent = `#${contagemIndex + 1}`;
       if (el('financeiroPosicaoSub')) el('financeiroPosicaoSub').textContent = `${sorted.length} municípios`;
       if (el('financeiroTotal')) el('financeiroTotal').textContent = formatBRL(contagem.total);
@@ -2405,12 +2464,13 @@
       
       if (el('rankFinanceiroPos')) el('rankFinanceiroPos').textContent = `#${contagemIndex + 1}`;
       if (el('rankFinanceiroDetalhe')) el('rankFinanceiroDetalhe').textContent = `${contagemIndex + 1}º de ${sorted.length}`;
-      if (el('rankFinanceiroTotal')) el('rankFinanceiroTotal').textContent = formatBRL(contagem.total);
+      if (el('rankFinanceiroTotal')) el('rankFinanceiroTotal').textContent = formatBRL(ultimoMesValor);
+      if (el('rankFinanceiroLabel')) el('rankFinanceiroLabel').textContent = `Total (${window.ultimoMesFinanceiro.rotulo})`;
       
       if (el('rankParticipacao')) el('rankParticipacao').textContent = `${participacao}%`;
       if (el('rankBarra')) el('rankBarra').style.width = `${participacao}%`;
       
-      // MINI RANKING CORRIGIDO: 5 municípios + Contagem no final
+      // MINI RANKING: 5 municípios + Contagem no final
       const top5SemContagem = sorted.filter((d, i) => !d.municipio.toLowerCase().includes('contagem')).slice(0, 5);
       let miniHTML = '<div style="display:grid; grid-template-columns:30px 1fr 80px; gap:5px; font-weight:700;">';
       miniHTML += '<div>#</div><div>Município</div><div style="text-align:right">Total</div>';
@@ -2441,22 +2501,22 @@
   function buildRankingFisicoGraficos(sorted) {
     destroy('cRankFisicoEvolucao');
     const ctxEvol = el('cRankFisicoEvolucao')?.getContext('2d');
-    if (ctxEvol) {
+    if (ctxEvol && window.mesesRanking) {
       const contagem = sorted.find(d => d.municipio.toLowerCase().includes('contagem'));
       const top5 = sorted.slice(0,5).filter(d => !d.municipio.toLowerCase().includes('contagem'));
       
-      const meses = ['ago/25', 'set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26'];
-      const valoresContagem = contagem ? [contagem.ago2025, contagem.set2025, contagem.out2025, contagem.nov2025, contagem.dez2025, contagem.jan2026] : [0,0,0,0,0,0];
+      const rotulos = window.mesesRanking.map(m => m.rotulo);
+      const valoresContagem = window.mesesRanking.map(m => contagem ? (contagem[m.nome] || 0) : 0);
       
-      const mediaTop5 = meses.map((_, i) => {
-        const soma = top5.reduce((acc, d) => acc + [d.ago2025, d.set2025, d.out2025, d.nov2025, d.dez2025, d.jan2026][i], 0);
+      const mediaTop5 = window.mesesRanking.map(m => {
+        const soma = top5.reduce((acc, d) => acc + (d[m.nome] || 0), 0);
         return top5.length ? Math.round(soma / top5.length) : 0;
       });
       
       charts['cRankFisicoEvolucao'] = new Chart(ctxEvol, {
         type: 'line',
         data: {
-          labels: meses,
+          labels: rotulos,
           datasets: [
             { label: '📍 CONTAGEM', data: valoresContagem, borderColor: '#0f2f5f', backgroundColor: 'rgba(15,47,95,.1)', borderWidth: 4, tension: 0.3 },
             { label: 'Média Top 5', data: mediaTop5, borderColor: '#94a3b8', borderDash: [5,5], borderWidth: 2, tension: 0.3 }
@@ -2472,7 +2532,6 @@
     destroy('cRankFisicoBarras');
     const ctxBar = el('cRankFisicoBarras')?.getContext('2d');
     if (ctxBar) {
-      // Top 10 - ordem decrescente (maior primeiro)
       const top10 = sorted.slice(0,10);
       charts['cRankFisicoBarras'] = new Chart(ctxBar, {
         type: 'bar',
@@ -2502,22 +2561,22 @@
   function buildRankingFinanceiroGraficos(sorted) {
     destroy('cRankFinanceiroEvolucao');
     const ctxEvol = el('cRankFinanceiroEvolucao')?.getContext('2d');
-    if (ctxEvol) {
+    if (ctxEvol && window.mesesRankingFinanceiro) {
       const contagem = sorted.find(d => d.municipio.toLowerCase().includes('contagem'));
       const top5 = sorted.slice(0,5).filter(d => !d.municipio.toLowerCase().includes('contagem'));
       
-      const meses = ['ago/25', 'set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26'];
-      const valoresContagem = contagem ? [contagem.ago2025, contagem.set2025, contagem.out2025, contagem.nov2025, contagem.dez2025, contagem.jan2026] : [0,0,0,0,0,0];
+      const rotulos = window.mesesRankingFinanceiro.map(m => m.rotulo);
+      const valoresContagem = window.mesesRankingFinanceiro.map(m => contagem ? (contagem[m.nome] || 0) : 0);
       
-      const mediaTop5 = meses.map((_, i) => {
-        const soma = top5.reduce((acc, d) => acc + [d.ago2025, d.set2025, d.out2025, d.nov2025, d.dez2025, d.jan2026][i], 0);
+      const mediaTop5 = window.mesesRankingFinanceiro.map(m => {
+        const soma = top5.reduce((acc, d) => acc + (d[m.nome] || 0), 0);
         return top5.length ? soma / top5.length : 0;
       });
       
       charts['cRankFinanceiroEvolucao'] = new Chart(ctxEvol, {
         type: 'line',
         data: {
-          labels: meses,
+          labels: rotulos,
           datasets: [
             { label: '📍 CONTAGEM', data: valoresContagem, borderColor: '#0f2f5f', backgroundColor: 'rgba(15,47,95,.1)', borderWidth: 4, tension: 0.3 },
             { label: 'Média Top 5', data: mediaTop5, borderColor: '#94a3b8', borderDash: [5,5], borderWidth: 2, tension: 0.3 }
@@ -2534,7 +2593,6 @@
     destroy('cRankFinanceiroBarras');
     const ctxBar = el('cRankFinanceiroBarras')?.getContext('2d');
     if (ctxBar) {
-      // Top 10 - ordem decrescente (maior primeiro)
       const top10 = sorted.slice(0,10);
       charts['cRankFinanceiroBarras'] = new Chart(ctxBar, {
         type: 'bar',
@@ -2564,53 +2622,74 @@
 
   function renderTabelaFisico(sorted) {
     const tbody = el('tBodyFisico');
-    if (!tbody) return;
+    const cabecalho = el('cabecalhoFisico');
+    if (!tbody || !window.mesesRanking) return;
     
     const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
+    
+    // Gera cabeçalho dinâmico
+    if (cabecalho) {
+      let html = '<th>Posição</th><th>Município</th>';
+      window.mesesRanking.forEach(m => {
+        html += `<th>${m.rotulo}</th>`;
+      });
+      html += '<th>Total</th><th>%</th>';
+      cabecalho.innerHTML = html;
+    }
     
     tbody.innerHTML = sorted.map((d, i) => {
       const pct = ((d.total / totalGeral) * 100).toFixed(1);
       const isContagem = d.municipio.toLowerCase().includes('contagem');
-      return `
-        <tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">
-          <td><b>${i+1}º</b></td>
-          <td>${isContagem ? '📍 ' : ''}${d.municipio}</td>
-          <td>${d.ago2025.toLocaleString('pt-BR')}</td>
-          <td>${d.set2025.toLocaleString('pt-BR')}</td>
-          <td>${d.out2025.toLocaleString('pt-BR')}</td>
-          <td>${d.nov2025.toLocaleString('pt-BR')}</td>
-          <td>${d.dez2025.toLocaleString('pt-BR')}</td>
-          <td>${d.jan2026.toLocaleString('pt-BR')}</td>
-          <td><b>${d.total.toLocaleString('pt-BR')}</b></td>
-          <td>${pct}%</td>
-        </tr>
-      `;
+      
+      let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`;
+      linha += `<td><b>${i+1}º</b></td>`;
+      linha += `<td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`;
+      
+      window.mesesRanking.forEach(m => {
+        linha += `<td>${(d[m.nome] || 0).toLocaleString('pt-BR')}</td>`;
+      });
+      
+      linha += `<td><b>${d.total.toLocaleString('pt-BR')}</b></td>`;
+      linha += `<td>${pct}%</td>`;
+      linha += `</tr>`;
+      
+      return linha;
     }).join('');
   }
 
   function renderTabelaFinanceiro(sorted) {
     const tbody = el('tBodyFinanceiro');
-    if (!tbody) return;
+    const cabecalho = el('cabecalhoFinanceiro');
+    if (!tbody || !window.mesesRankingFinanceiro) return;
     
     const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
+    
+    if (cabecalho) {
+      let html = '<th>Posição</th><th>Município</th>';
+      window.mesesRankingFinanceiro.forEach(m => {
+        html += `<th>${m.rotulo}</th>`;
+      });
+      html += '<th>Total</th><th>%</th>';
+      cabecalho.innerHTML = html;
+    }
     
     tbody.innerHTML = sorted.map((d, i) => {
       const pct = ((d.total / totalGeral) * 100).toFixed(1);
       const isContagem = d.municipio.toLowerCase().includes('contagem');
-      return `
-        <tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">
-          <td><b>${i+1}º</b></td>
-          <td>${isContagem ? '📍 ' : ''}${d.municipio}</td>
-          <td>${formatBRL(d.ago2025)}</td>
-          <td>${formatBRL(d.set2025)}</td>
-          <td>${formatBRL(d.out2025)}</td>
-          <td>${formatBRL(d.nov2025)}</td>
-          <td>${formatBRL(d.dez2025)}</td>
-          <td>${formatBRL(d.jan2026)}</td>
-          <td><b>${formatBRL(d.total)}</b></td>
-          <td>${pct}%</td>
-        </tr>
-      `;
+      
+      let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`;
+      linha += `<td><b>${i+1}º</b></td>`;
+      linha += `<td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`;
+      
+      window.mesesRankingFinanceiro.forEach(m => {
+        linha += `<td>${formatBRL(d[m.nome] || 0)}</td>`;
+      });
+      
+      linha += `<td><b>${formatBRL(d.total)}</b></td>`;
+      linha += `<td>${pct}%</td>`;
+      linha += `</tr>`;
+      
+      return linha;
     }).join('');
   }
 
