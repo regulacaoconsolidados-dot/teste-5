@@ -872,7 +872,21 @@
       <div class="card section">
         <div class="tableTop"><div class="sectionTitle"><i class="fa-solid fa-table"></i> Tabela filtrada (dados reais)</div><div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="tSearch" placeholder="Buscar..." /></div><div class="muted" id="tInfo">—</div></div>
         <div style="overflow:auto; border-radius:12px; border:1px solid var(--border); max-height:520px;">
-          <table><thead><tr><th data-col="especialidade" onclick="sortTable('especialidade', this)"><div class="th-filter-wrapper"><span>Especialidade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="idade" onclick="sortTable('idade', this)"><div class="th-filter-wrapper"><span>Idade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="mesKey" onclick="sortTable('mesKey', this)"><div class="th-filter-wrapper"><span>Mês/Ano</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="agendado" onclick="sortTable('agendado', this)"><div class="th-filter-wrapper"><span>Agendado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="recepcionado" onclick="sortTable('recepcionado', this)"><div class="th-filter-wrapper"><span>Recepcionado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="apac" onclick="sortTable('apac', this)"><div class="th-filter-wrapper"><span>APAC</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="faturado" onclick="sortTable('faturado', this)"><div class="th-filter-wrapper"><span>Faturado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="financeiro" onclick="sortTable('financeiro', this)"><div class="th-filter-wrapper"><span>Financeiro (R$)</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th></tr></thead><tbody id="tBody"></tbody></table>
+          <table id="ociTable">
+            <thead>
+              <tr>
+                <th data-col="especialidade" onclick="sortTable('especialidade', this)"><div class="th-filter-wrapper"><span>Especialidade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="idade" onclick="sortTable('idade', this)"><div class="th-filter-wrapper"><span>Idade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="mesKey" onclick="sortTable('mesKey', this)"><div class="th-filter-wrapper"><span>Mês/Ano</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="agendado" onclick="sortTable('agendado', this)"><div class="th-filter-wrapper"><span>Agendado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="recepcionado" onclick="sortTable('recepcionado', this)"><div class="th-filter-wrapper"><span>Recepcionado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="apac" onclick="sortTable('apac', this)"><div class="th-filter-wrapper"><span>APAC</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="faturado" onclick="sortTable('faturado', this)"><div class="th-filter-wrapper"><span>Faturado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="financeiro" onclick="sortTable('financeiro', this)"><div class="th-filter-wrapper"><span>Financeiro (R$)</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+              </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+          </table>
         </div>
         <div id="columnFilterPopup" class="chart-filter-popup" style="position:fixed;z-index:2000;"><select id="colFilterSelect" multiple size="5"></select><div class="filter-actions"><button class="btn-filter-apply" onclick="applyColumnFilter()">Aplicar</button><button class="btn-filter-clear" onclick="clearColumnFilter()">Limpar</button></div></div>
       </div>
@@ -916,55 +930,55 @@
         
     const GRUPOS = {
       "01": { nome: "01 - Atenção em Oncologia", subgrupos: [
-        { codigo: "09.01.01.001-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE MAMA" },
-        { codigo: "09.01.01.002-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA" },
-        { codigo: "09.01.01.003-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE PRÓSTATA" },
-        { codigo: "09.01.01.004-9", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE PRÓSTATA" },
-        { codigo: "09.01.01.005-7", nome: "OCI INVESTIGAÇÃO DIAGNÓSTICA DE CÂNCER DE COLO DO ÚTERO" },
-        { codigo: "09.01.01.006-5", nome: "OCI AVALIAÇÃO DIAGNOSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO" },
-        { codigo: "09.01.01.007-3", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER GÁSTRICO" },
-        { codigo: "09.01.01.008-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE CÂNCER COLORRETAL" },
-        { codigo: "09.01.01.009-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA - I" },
-        { codigo: "09.01.01.010-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE CÂNCER DE MAMA-II" },
-        { codigo: "09.01.01.011-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-I" },
-        { codigo: "09.01.01.012-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA E TERAPÊUTICA DE CÂNCER DE COLO DO ÚTERO-II" }
-      ] },
-      "02": { nome: "02 - Atenção em Cardiologia", subgrupos: [
-        { codigo: "09.02.01.001-8", nome: "OCI AVALIAÇÃO DE RISCO CIRÚRGICO" },
-        { codigo: "09.02.01.002-6", nome: "OCI AVALIAÇÃO CARDIOLÓGICA" },
-        { codigo: "09.02.01.003-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL - SÍNDROME CORONARIANA CRÔNICA" },
-        { codigo: "09.02.01.004-2", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA I - SÍNDROME CORONARIANA CRÔNICA" },
-        { codigo: "09.02.01.005-0", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA II - SÍNDROME CORONARIANA CRÔNICA" },
-        { codigo: "09.02.01.006-9", nome: "OCI AVALIAÇÃO DIAGNÓSTICA - INSUFICIÊNCIA CARDÍACA" }
-      ] },
-      "03": { nome: "03 - Atenção em Ortopedia", subgrupos: [
-        { codigo: "09.03.01.001-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA" },
-        { codigo: "09.03.01.002-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E ULTRASSONOGRAFIA" },
-        { codigo: "09.03.01.003-8", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E TOMOGRAFIA COMPUTADORIZADA" },
-        { codigo: "09.03.01.004-6", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM ORTOPEDIA COM RECURSOS DE RADIOLOGIA E RESSONÂNCIA MAGNÉTICA" }
-      ] },
-      "04": { nome: "04 - Atenção em Otorrinolaringologia", subgrupos: [
-        { codigo: "09.04.01.001-5", nome: "OCI AVALIAÇÃO INICIAL DIAGNÓSTICA DE DÉFICIT AUDITIVO" },
-        { codigo: "09.04.01.002-3", nome: "OCI PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE DÉFICIT AUDITIVO" },
-        { codigo: "09.04.01.003-1", nome: "OCI AVALIAÇÃO DIAGNÓSTICA DE NASOFARINGE E DE OROFARINGE" }
-      ] },
-      "05": { nome: "05 - Atenção em Oftalmologia", subgrupos: [
-        { codigo: "09.05.01.001-9", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - 0 A 8 ANOS" },
-        { codigo: "09.05.01.002-7", nome: "OCI AVALIAÇÃO DE ESTRABISMO" },
-        { codigo: "09.05.01.003-5", nome: "OCI AVALIAÇÃO INICIAL EM OFTALMOLOGIA - A PARTIR DE 9 ANOS" },
-        { codigo: "09.05.01.004-3", nome: "OCI AVALIAÇÃO DE RETINOPATIA DIABÉTICA" },
-        { codigo: "09.05.01.005-1", nome: "OCI AVALIAÇÃO INICIAL PARA ONCOLOGIA OFTALMOLÓGICA" },
-        { codigo: "09.05.01.006-0", nome: "OCI AVALIAÇÃO DIAGNÓSTICA EM NEURO OFTALMOLOGIA" },
-        { codigo: "09.05.01.007-8", nome: "OCI EXAMES OFTALMOLÓGICOS SOB SEDAÇÃO" }
-      ] },
-      "06": { nome: "06 - Atenção em Saúde da Mulher", subgrupos: [
-        { codigo: "09.06.01.001-2", nome: "GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) I" },
-        { codigo: "09.06.01.002-0", nome: "OCI - GIN1 - AVALIAÇÃO DIAGNÓSTICA INICIAL DE SAÚDE DA MULHER (GINECOLOGIA) II" },
-        { codigo: "09.06.01.003-9", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA) - SANGRAMENTO UTERINO ANORMAL I" },
-        { codigo: "09.06.01.004-7", nome: "OCI - GIN2 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- SANGRAMENTO UTERINO ANORMAL II" },
-        { codigo: "09.06.01.005-5", nome: "OCI - GIN3 - PROGRESSÃO DA AVALIAÇÃO DIAGNÓSTICA DE SAÚDE DA MULHER (GINECOLOGIA)- ENDOMETRIOSE PROFUNDA- CASOS COMPLEXOS E PROGRAMAÇÃO CIRÚRGICA" }
-      ] }
-    };
+    { codigo: "09.01.01.001-4", nome: "OCI Avaliação Diagnóstica Inicial de Câncer de Mama" },
+    { codigo: "09.01.01.002-2", nome: "OCI Progressão da Avaliação Diagnóstica de Câncer de Mama" },
+    { codigo: "09.01.01.003-0", nome: "OCI Avaliação Diagnóstica Inicial de Câncer de Próstata" },
+    { codigo: "09.01.01.004-9", nome: "OCI Progressão da Avaliação Diagnóstica de Câncer de Próstata" },
+    { codigo: "09.01.01.005-7", nome: "OCI Investigação Diagnóstica de Câncer de Colo do Útero" },
+    { codigo: "09.01.01.006-5", nome: "OCI Avaliação Diagnóstica e Terapêutica de Câncer de Colo do Útero" },
+    { codigo: "09.01.01.007-3", nome: "OCI Avaliação Diagnóstica de Câncer Gástrico" },
+    { codigo: "09.01.01.008-1", nome: "OCI Avaliação Diagnóstica de Câncer Colorretal" },
+    { codigo: "09.01.01.009-0", nome: "OCI Progressão da Avaliação Diagnóstica de Câncer de Mama - I" },
+    { codigo: "09.01.01.010-3", nome: "OCI Progressão da Avaliação Diagnóstica de Câncer de Mama - II" },
+    { codigo: "09.01.01.011-1", nome: "OCI Avaliação Diagnóstica e Terapêutica de Câncer de Colo do Útero - I" },
+    { codigo: "09.01.01.012-0", nome: "OCI Avaliação Diagnóstica e Terapêutica de Câncer de Colo do Útero - II" }
+  ] },
+  "02": { nome: "02 - Atenção em Cardiologia", subgrupos: [
+    { codigo: "09.02.01.001-8", nome: "OCI Avaliação de Risco Cirúrgico" },
+    { codigo: "09.02.01.002-6", nome: "OCI Avaliação Cardiológica" },
+    { codigo: "09.02.01.003-4", nome: "OCI Avaliação Diagnóstica Inicial - Síndrome Coronariana Crônica" },
+    { codigo: "09.02.01.004-2", nome: "OCI Progressão da Avaliação Diagnóstica I - Síndrome Coronariana Crônica" },
+    { codigo: "09.02.01.005-0", nome: "OCI Progressão da Avaliação Diagnóstica II - Síndrome Coronariana Crônica" },
+    { codigo: "09.02.01.006-9", nome: "OCI Avaliação Diagnóstica - Insuficiência Cardíaca" }
+  ] },
+  "03": { nome: "03 - Atenção em Ortopedia", subgrupos: [
+    { codigo: "09.03.01.001-1", nome: "OCI Avaliação Diagnóstica em Ortopedia com Recursos de Radiologia" },
+    { codigo: "09.03.01.002-0", nome: "OCI Avaliação Diagnóstica em Ortopedia com Recursos de Radiologia e Ultrassonografia" },
+    { codigo: "09.03.01.003-8", nome: "OCI Avaliação Diagnóstica em Ortopedia com Recursos de Radiologia e Tomografia Computadorizada" },
+    { codigo: "09.03.01.004-6", nome: "OCI Avaliação Diagnóstica em Ortopedia com Recursos de Radiologia e Ressonância Magnética" }
+  ] },
+  "04": { nome: "04 - Atenção em Otorrinolaringologia", subgrupos: [
+    { codigo: "09.04.01.001-5", nome: "OCI Avaliação Inicial Diagnóstica de Déficit Auditivo" },
+    { codigo: "09.04.01.002-3", nome: "OCI Progressão da Avaliação Diagnóstica de Déficit Auditivo" },
+    { codigo: "09.04.01.003-1", nome: "OCI Avaliação Diagnóstica de Nasofaringe e de Orofaringe" }
+  ] },
+  "05": { nome: "05 - Atenção em Oftalmologia", subgrupos: [
+    { codigo: "09.05.01.001-9", nome: "OCI Avaliação Inicial em Oftalmologia - 0 a 8 Anos" },
+    { codigo: "09.05.01.002-7", nome: "OCI Avaliação de Estrabismo" },
+    { codigo: "09.05.01.003-5", nome: "OCI Avaliação Inicial em Oftalmologia - a Partir de 9 Anos" },
+    { codigo: "09.05.01.004-3", nome: "OCI Avaliação de Retinopatia Diabética" },
+    { codigo: "09.05.01.005-1", nome: "OCI Avaliação Inicial para Oncologia Oftalmológica" },
+    { codigo: "09.05.01.006-0", nome: "OCI Avaliação Diagnóstica em Neuro Oftalmologia" },
+    { codigo: "09.05.01.007-8", nome: "OCI Exames Oftalmológicos Sob Sedação" }
+  ] },
+  "06": { nome: "06 - Atenção em Saúde da Mulher", subgrupos: [
+    { codigo: "09.06.01.001-2", nome: "GIN1 - Avaliação Diagnóstica Inicial de Saúde da Mulher (Ginecologia) I" },
+    { codigo: "09.06.01.002-0", nome: "OCI - GIN1 - Avaliação Diagnóstica Inicial de Saúde da Mulher (Ginecologia) II" },
+    { codigo: "09.06.01.003-9", nome: "OCI - GIN2 - Progressão da Avaliação Diagnóstica de Saúde da Mulher (Ginecologia) - Sangramento Uterino Anormal I" },
+    { codigo: "09.06.01.004-7", nome: "OCI - GIN2 - Progressão da Avaliação Diagnóstica de Saúde da Mulher (Ginecologia) - Sangramento Uterino Anormal II" },
+    { codigo: "09.06.01.005-5", nome: "OCI - GIN3 - Progressão da Avaliação Diagnóstica de Saúde da Mulher (Ginecologia) - Endometriose Profunda - Casos Complexos e Programação Cirúrgica" }
+  ] }
+};
     
     let allData = [], dataF = [], tableSort = { col: null, dir: "asc" };
     let selectedSubgrupos = new Set(), selectedMeses = new Set(), allMeses = [];
@@ -1582,7 +1596,25 @@
         else if(activeColumnFilter === 'idade') rows = rows.filter(x => columnFilterValues.includes(x.idade || "Não informado"));
         else if(activeColumnFilter === 'mesKey') rows = rows.filter(x => columnFilterValues.includes(x.mesLabel || x.mesRaw));
       }
-      if(tableSort.col){ const col=tableSort.col,dir=tableSort.dir==="asc"?1:-1; rows=[...rows].sort((a,b)=>{ let va=a[col],vb=b[col]; if(col==="especialidade"||col==="idade"||col==="mesKey"){ va=String(va||"").toLowerCase(); vb=String(vb||"").toLowerCase(); return va.localeCompare(vb,"pt-BR")*dir; } else if(col==="financeiro") { return ((a.financeiro||0) - (b.financeiro||0)) * dir; } else { return ((va||0)-(vb||0))*dir; } }); }
+      if(tableSort.col){ 
+        const col=tableSort.col, dir=tableSort.dir==="asc"?1:-1; 
+        rows=[...rows].sort((a,b)=>{ 
+          let va=a[col], vb=b[col];
+          if(col==="especialidade"||col==="idade"||col==="mesKey"){ 
+            va=String(va||"").toLowerCase(); 
+            vb=String(vb||"").toLowerCase(); 
+            return va.localeCompare(vb,"pt-BR")*dir; 
+          } else if(col==="financeiro") { 
+            const av = typeof a.financeiro === 'number' ? a.financeiro : 0;
+            const bv = typeof b.financeiro === 'number' ? b.financeiro : 0;
+            return (av - bv) * dir; 
+          } else { 
+            const av = typeof a[col] === 'number' ? a[col] : (a[col] || 0);
+            const bv = typeof b[col] === 'number' ? b[col] : (b[col] || 0);
+            return (av - bv) * dir; 
+          } 
+        }); 
+      }
       if(el("tInfo")) el("tInfo").textContent=`${rows.length.toLocaleString("pt-BR")} registro(s)`;
       if(!rows.length){ tBody.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`; return; }
       tBody.innerHTML=rows.slice(0,2000).map(x=>`<tr><td title="${x.especialidade}">${x.especialidade}</td><td>${x.idade||"Não informado"}</td><td>${x.mesLabel||x.mesRaw}</td><td>${x.agendado.toLocaleString("pt-BR")}</td><td>${x.recepcionado.toLocaleString("pt-BR")}</td><td>${x.apac.toLocaleString("pt-BR")}</td><td>${x.faturado.toLocaleString("pt-BR")}</td><td style="font-weight:800; color:${x.financeiro>0?'#059669':'#94a3b8'};">${x.financeiro>0?formatBRL(x.financeiro):'—'}</td></tr>`).join("");
