@@ -872,7 +872,21 @@
       <div class="card section">
         <div class="tableTop"><div class="sectionTitle"><i class="fa-solid fa-table"></i> Tabela filtrada (dados reais)</div><div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="tSearch" placeholder="Buscar..." /></div><div class="muted" id="tInfo">—</div></div>
         <div style="overflow:auto; border-radius:12px; border:1px solid var(--border); max-height:520px;">
-          <table><thead><tr><th data-col="especialidade" onclick="sortTable('especialidade', this)"><div class="th-filter-wrapper"><span>Especialidade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="idade" onclick="sortTable('idade', this)"><div class="th-filter-wrapper"><span>Idade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="mesKey" onclick="sortTable('mesKey', this)"><div class="th-filter-wrapper"><span>Mês/Ano</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="agendado" onclick="sortTable('agendado', this)"><div class="th-filter-wrapper"><span>Agendado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="recepcionado" onclick="sortTable('recepcionado', this)"><div class="th-filter-wrapper"><span>Recepcionado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="apac" onclick="sortTable('apac', this)"><div class="th-filter-wrapper"><span>APAC</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="faturado" onclick="sortTable('faturado', this)"><div class="th-filter-wrapper"><span>Faturado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th><th data-col="financeiro" onclick="sortTable('financeiro', this)"><div class="th-filter-wrapper"><span>Financeiro (R$)</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th></tr></thead><tbody id="tBody"></tbody></table>
+          <table>
+            <thead>
+              <tr>
+                <th data-col="especialidade" onclick="sortTable('especialidade', this)"><div class="th-filter-wrapper"><span>Especialidade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('especialidade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="idade" onclick="sortTable('idade', this)"><div class="th-filter-wrapper"><span>Idade</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('idade', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="mesKey" onclick="sortTable('mesKey', this)"><div class="th-filter-wrapper"><span>Mês/Ano</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('mesKey', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="agendado" onclick="sortTable('agendado', this)"><div class="th-filter-wrapper"><span>Agendado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('agendado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="recepcionado" onclick="sortTable('recepcionado', this)"><div class="th-filter-wrapper"><span>Recepcionado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('recepcionado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="apac" onclick="sortTable('apac', this)"><div class="th-filter-wrapper"><span>APAC</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('apac', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="faturado" onclick="sortTable('faturado', this)"><div class="th-filter-wrapper"><span>Faturado</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('faturado', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+                <th data-col="financeiro" onclick="sortTable('financeiro', this)"><div class="th-filter-wrapper"><span>Financeiro (R$)</span><span class="th-filter-icon" onclick="event.stopPropagation();toggleColumnFilter('financeiro', event)"><i class="fa-solid fa-filter"></i></span></div><span class="sort-icon"></span></th>
+              </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+          </table>
         </div>
         <div id="columnFilterPopup" class="chart-filter-popup" style="position:fixed;z-index:2000;"><select id="colFilterSelect" multiple size="5"></select><div class="filter-actions"><button class="btn-filter-apply" onclick="applyColumnFilter()">Aplicar</button><button class="btn-filter-clear" onclick="clearColumnFilter()">Limpar</button></div></div>
       </div>
@@ -912,8 +926,7 @@
     
     const FIN_COLORS = ["#0f2f5f","#1a3a6b","#2a5298","#3b82f6","#059669","#d97706","#8b5cf6","#b91c1c","#0ea5e9","#7c3aed","#b45309","#be123c"];
     const FIN_MONTH_MAP = {"jan":{m:1,label:"Jan"},"fev":{m:2,label:"Fev"},"mar":{m:3,label:"Mar"},"abr":{m:4,label:"Abr"},"mai":{m:5,label:"Mai"},"jun":{m:6,label:"Jun"},"jul":{m:7,label:"Jul"},"ago":{m:8,label:"Ago"},"set":{m:9,label:"Set"},"out":{m:10,label:"Out"},"nov":{m:11,label:"Nov"},"dez":{m:12,label:"Dez"}};
-
-        
+    
     const GRUPOS = {
       "01": { nome: "01 - Atenção em Oncologia", subgrupos: [
         { codigo: "09.01.01.001-4", nome: "OCI AVALIAÇÃO DIAGNÓSTICA INICIAL DE CÂNCER DE MAMA" },
@@ -978,8 +991,7 @@
     const PT_MONTH = { jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12 };
     const PT_LABEL = ["","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
     const el = (id) => document.getElementById(id);
-
-        
+    
     function initEventListeners() {
       el("btnRefresh").addEventListener("click", () => { loadData(true); loadFinData(true); loadRankingFisico(); loadRankingFinanceiro(); });
       el("btnExcel").addEventListener("click", exportExcel);
@@ -1053,7 +1065,6 @@
     function parseFinanceiro(v){ const s=normStr(v).toUpperCase().trim(); if(!s||s==="NT"||s==="-"||s==="N/A"||s==="—"||s==="S/D"||s==="SEM DADOS") return 0; const clean=s.replace(/R\$\s*/g,"").replace(/\./g,"").replace(",",".").trim(); const n=parseFloat(clean); return isNaN(n)?0:n; }
     function parseMesAno(raw){ const s=normStr(raw).toLowerCase(); if(!s) return {key:"",label:"",y:0,m:0}; const mon=(s.match(/(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/)||[])[1]; const yy=(s.match(/(\d{2})\b/)||[])[1]; const m=mon?(PT_MONTH[mon]||0):0; const y=yy?(2000+parseInt(yy,10)):0; if(!m||!y) return {key:s,label:raw,y:0,m:0}; return {key:`${y}-${String(m).padStart(2,"0")}`,label:`${PT_LABEL[m]}/${y}`,y,m}; }
     function mesSortKey(d){ return (d.mesY*100)+d.mesM; }
-    function idadeKey(s){ const v=normStr(s).toUpperCase(); if(!v||v==="SEM DADOS") return 999999; let m=v.match(/(\d{1,3})\s*(A|Á|À)\s*(\d{1,3})/); if(m) return parseInt(m[1],10); m=v.match(/(\d{1,3})/); if(m) return parseInt(m[1],10); return 999998; }
     
     function abbreviateEspName(esp, maxLength = 30) {
       if (!esp) return "";
@@ -1100,8 +1111,7 @@
     function parseFinValue(v){ const s=normStr(v).toUpperCase().trim(); if(!s||s==="NT"||s==="-"||s==="N/A"||s==="—"||s==="S/D") return 0; const clean=s.replace(/R\$\s*/g,"").replace(/\./g,"").replace(",",".").trim(); const n=parseFloat(clean); return isNaN(n)?0:n; }
     function formatBRL(v){ return "R$\u00a0"+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function formatBRLCompact(v){ v=Number(v||0); if(v>=1000000) return "R$\u00a0"+(v/1000000).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"M"; if(v>=1000) return "R$\u00a0"+(v/1000).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1})+"K"; return formatBRL(v); }
-
-        
+    
     async function loadData(showMsg=false){
       el("loading").classList.add("on");
       if(showMsg) toast("Sincronizando com Google Sheets…","info");
@@ -1317,7 +1327,7 @@
       if (!tbody || !window.mesesRanking) return;
       const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
       if (cabecalho) { let html = '<th>Posição</th><th>Município</th>'; window.mesesRanking.forEach(m => { html += `<th>${m.rotulo}</th>`; }); html += '<th>Total</th><th>%</th>'; cabecalho.innerHTML = html; }
-      tbody.innerHTML = sorted.map((d, i) => { const pct = ((d.total / totalGeral) * 100).toFixed(1); const isContagem = d.municipio.toLowerCase().includes('contagem'); let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`; linha += `<td><b>${i+1}º</b></td><td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`; window.mesesRanking.forEach(m => { linha += `<td>${(d[m.nome] || 0).toLocaleString('pt-BR')}</td>`; }); linha += `<td><b>${d.total.toLocaleString('pt-BR')}</b></td><td>${pct}%</td></tr>`; return linha; }).join('');
+      tbody.innerHTML = sorted.map((d, i) => { const pct = ((d.total / totalGeral) * 100).toFixed(1); const isContagem = d.municipio.toLowerCase().includes('contagem'); let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`; linha += `<td><b>${i+1}º</b></td>`; linha += `<td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`; window.mesesRanking.forEach(m => { linha += `<td>${(d[m.nome] || 0).toLocaleString('pt-BR')}</td>`; }); linha += `<td><b>${d.total.toLocaleString('pt-BR')}</b></td>`; linha += `<td>${pct}%</td>`; linha += `</tr>`; return linha; }).join('');
     }
     
     function renderTabelaFinanceiro(sorted) {
@@ -1326,10 +1336,9 @@
       if (!tbody || !window.mesesRankingFinanceiro) return;
       const totalGeral = sorted.reduce((acc, d) => acc + d.total, 0);
       if (cabecalho) { let html = '<th>Posição</th><th>Município</th>'; window.mesesRankingFinanceiro.forEach(m => { html += `<th>${m.rotulo}</th>`; }); html += '<th>Total</th><th>%</th>'; cabecalho.innerHTML = html; }
-      tbody.innerHTML = sorted.map((d, i) => { const pct = ((d.total / totalGeral) * 100).toFixed(1); const isContagem = d.municipio.toLowerCase().includes('contagem'); let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`; linha += `<td><b>${i+1}º</b></td><td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`; window.mesesRankingFinanceiro.forEach(m => { linha += `<td>${formatBRL(d[m.nome] || 0)}</td>`; }); linha += `<td><b>${formatBRL(d.total)}</b></td><td>${pct}%</td></tr>`; return linha; }).join('');
+      tbody.innerHTML = sorted.map((d, i) => { const pct = ((d.total / totalGeral) * 100).toFixed(1); const isContagem = d.municipio.toLowerCase().includes('contagem'); let linha = `<tr style="${isContagem ? 'background:rgba(15,47,95,.05); font-weight:900;' : ''}">`; linha += `<td><b>${i+1}º</b></td>`; linha += `<td>${isContagem ? '📍 ' : ''}${d.municipio}</td>`; window.mesesRankingFinanceiro.forEach(m => { linha += `<td>${formatBRL(d[m.nome] || 0)}</td>`; }); linha += `<td><b>${formatBRL(d.total)}</b></td>`; linha += `<td>${pct}%</td>`; linha += `</tr>`; return linha; }).join('');
     }
-
-        
+    
     function buildFinKPIs(){
       if(!finData.length||!finMonths.length) return;
       const totalGeral=finData.reduce((acc,r)=>acc+r.total,0);
@@ -1463,7 +1472,7 @@
     }
     
     function destroy(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
-    function baseOptions(){ return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{labels:{font:{size:12,weight:"700"}}}, datalabels:{display:false}, tooltip:{titleFont:{size:12,weight:"800"},bodyFont:{size:12}} }, scales:{ x:{ticks:{font:{size:11,weight:"700"}},grid:{display:false}}, y:{ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.06)"},beginAtZero:true} } }; }
+    function baseOptions(){ return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{labels:{font:{size:12,weight:"700"}}}, datalabels:{display:false}, tooltip:{titleFont:{size:12,weight:"800"},bodyFont:{size:12}} }, scales:{ x:{ticks:{font:{size:11,weight:"700"}},grid:{display:false}}, y:{ticks:{font:{size:11,weight:"700"}},grid:{color:"rgba(2,6,23,.06)"},beginAtZero:true} }; }
     function labelMes(key){ const found=allData.find(x=>x.mesKey===key); return found?found.mesLabel:key; }
     function getOciDataForMonth(monthKey){ if(!monthKey) return dataF; return allData.filter(x=>{ if(selectedSubgrupos.size > 0) { let found = false; for (const codigo of selectedSubgrupos) { if (x.especialidade.includes(codigo)) { found = true; break; } } if (!found) return false; } return x.mesKey === monthKey; }); }
     
@@ -1490,9 +1499,7 @@
       else{color="#b91c1c";badgeBg="rgba(185,28,28,.26)";badgeColor="#7f1d1d";badgeText="✗ Crítico";}
       if(el("gaugeFatRecPct")) { el("gaugeFatRecPct").textContent=pctVal.toFixed(1)+"%"; el("gaugeFatRecPct").style.color=color; }
       const badge=el("gaugeFatRecBadge"); if(badge) { badge.textContent=badgeText; badge.style.background=badgeBg; badge.style.color=badgeColor; badge.style.border=`1px solid ${color}99`; }
-      if(el("gFatRecRec")) el("gFatRecRec").textContent=rec.toLocaleString("pt-BR");
-      if(el("gFatRecFat")) el("gFatRecFat").textContent=fat.toLocaleString("pt-BR");
-      if(el("gFatRecDiff")) el("gFatRecDiff").textContent=Math.max(0,rec-fat).toLocaleString("pt-BR");
+      if(el("gFatRecRec")) el("gFatRecRec").textContent=rec.toLocaleString("pt-BR"); if(el("gFatRecFat")) el("gFatRecFat").textContent=fat.toLocaleString("pt-BR"); if(el("gFatRecDiff")) el("gFatRecDiff").textContent=Math.max(0,rec-fat).toLocaleString("pt-BR");
       charts["cGaugeFatRec"]=new Chart(ctx,{type:"doughnut",data:{datasets:[{data:[50,30,20],backgroundColor:["rgba(185,28,28,.50)","rgba(217,119,6,.50)","rgba(5,150,105,.50)"],borderWidth:0,hoverOffset:0,weight:1},{data:[pctVal,100-pctVal],backgroundColor:[color,"rgba(226,232,240,0.0)"],borderWidth:0,borderRadius:8,hoverOffset:0,weight:2}]},options:{rotation:-90,circumference:180,cutout:"68%",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},animation:{animateRotate:true,duration:900}}});
     }
     
@@ -1510,9 +1517,7 @@
       else{color="#b91c1c";badgeBg="rgba(185,28,28,.26)";badgeColor="#7f1d1d";badgeText="✗ Crítico";}
       if(el("gaugeAbsPct")) { el("gaugeAbsPct").textContent=absPct.toFixed(1)+"%"; el("gaugeAbsPct").style.color=color; }
       const badge=el("gaugeAbsBadge"); if(badge) { badge.textContent=badgeText; badge.style.background=badgeBg; badge.style.color=badgeColor; badge.style.border=`1px solid ${color}99`; }
-      if(el("gAbsAg")) el("gAbsAg").textContent=ag.toLocaleString("pt-BR");
-      if(el("gAbsRec")) el("gAbsRec").textContent=rec.toLocaleString("pt-BR");
-      if(el("gAbsAus")) el("gAbsAus").textContent=ausencias.toLocaleString("pt-BR");
+      if(el("gAbsAg")) el("gAbsAg").textContent=ag.toLocaleString("pt-BR"); if(el("gAbsRec")) el("gAbsRec").textContent=rec.toLocaleString("pt-BR"); if(el("gAbsAus")) el("gAbsAus").textContent=ausencias.toLocaleString("pt-BR");
       charts["cGaugeAbs"]=new Chart(ctx,{type:"doughnut",data:{datasets:[{data:[10,10,15,65],backgroundColor:["rgba(5,150,105,.50)","rgba(59,130,246,.50)","rgba(217,119,6,.50)","rgba(185,28,28,.50)"],borderWidth:0,hoverOffset:0,weight:1},{data:[absPct,100-absPct],backgroundColor:[color,"rgba(226,232,240,0.0)"],borderWidth:0,borderRadius:8,hoverOffset:0,weight:2}]},options:{rotation:-90,circumference:180,cutout:"68%",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false},datalabels:{display:false}},animation:{animateRotate:true,duration:900}}});
     }
     
@@ -1574,18 +1579,62 @@
     }
     
     function renderTable(){
-      const tBody = el("tBody"); if(!tBody) return;
+      const tBody = el("tBody");
+      if(!tBody) return;
+      
       const q=normStr(el("tSearch")?.value||"").toLowerCase();
-      let rows=dataF.filter(x=>{ if(!q) return true; return (x.especialidade||"").toLowerCase().includes(q) || (x.idade||"").toLowerCase().includes(q) || (x.mesLabel||x.mesRaw||"").toLowerCase().includes(q); });
+      let rows=dataF.filter(x=>{
+        if(!q) return true;
+        return (x.especialidade||"").toLowerCase().includes(q) ||
+               (x.idade||"").toLowerCase().includes(q) ||
+               (x.mesLabel||x.mesRaw||"").toLowerCase().includes(q);
+      });
+
       if(columnFilterValues.length > 0 && activeColumnFilter) {
         if(activeColumnFilter === 'especialidade') rows = rows.filter(x => columnFilterValues.includes(x.especialidade));
         else if(activeColumnFilter === 'idade') rows = rows.filter(x => columnFilterValues.includes(x.idade || "Não informado"));
         else if(activeColumnFilter === 'mesKey') rows = rows.filter(x => columnFilterValues.includes(x.mesLabel || x.mesRaw));
       }
-      if(tableSort.col){ const col=tableSort.col,dir=tableSort.dir==="asc"?1:-1; rows=[...rows].sort((a,b)=>{ let va=a[col],vb=b[col]; if(col==="especialidade"||col==="idade"||col==="mesKey"){ va=String(va||"").toLowerCase(); vb=String(vb||"").toLowerCase(); return va.localeCompare(vb,"pt-BR")*dir; } else if(col==="financeiro") { return ((a.financeiro||0) - (b.financeiro||0)) * dir; } else { return ((va||0)-(vb||0))*dir; } }); }
+
+      if(tableSort.col){
+        const col=tableSort.col,dir=tableSort.dir==="asc"?1:-1;
+        rows=[...rows].sort((a,b)=>{
+          let va=a[col],vb=b[col];
+          if(col==="especialidade"||col==="idade"||col==="mesKey"){
+            if(col==="mesKey"){
+              va = a.mesKey || "";
+              vb = b.mesKey || "";
+            } else {
+              va=String(va||"").toLowerCase(); 
+              vb=String(vb||"").toLowerCase();
+            }
+            return va.localeCompare(vb,"pt-BR")*dir;
+          } else if(col==="financeiro") {
+            return ((a.financeiro||0) - (b.financeiro||0)) * dir;
+          } else {
+            return ((va||0)-(vb||0))*dir;
+          }
+        });
+      }
+
       if(el("tInfo")) el("tInfo").textContent=`${rows.length.toLocaleString("pt-BR")} registro(s)`;
-      if(!rows.length){ tBody.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`; return; }
-      tBody.innerHTML=rows.slice(0,2000).map(x=>`<tr><td title="${x.especialidade}">${x.especialidade}</td><td>${x.idade||"Não informado"}</td><td>${x.mesLabel||x.mesRaw}</td><td>${x.agendado.toLocaleString("pt-BR")}</td><td>${x.recepcionado.toLocaleString("pt-BR")}</td><td>${x.apac.toLocaleString("pt-BR")}</td><td>${x.faturado.toLocaleString("pt-BR")}</td><td style="font-weight:800; color:${x.financeiro>0?'#059669':'#94a3b8'};">${x.financeiro>0?formatBRL(x.financeiro):'—'}</td></tr>`).join("");
+      
+      if(!rows.length){
+        tBody.innerHTML=`<tr><td colspan="8" class="muted">Nenhum dado para os filtros selecionados.</td></tr>`;
+        return;
+      }
+      
+      tBody.innerHTML=rows.slice(0,2000).map(x=>`
+        <tr>
+          <td title="${x.especialidade}">${x.especialidade}</td>
+          <td>${x.idade || "Não informado"}</td>
+          <td>${x.mesLabel || x.mesRaw || "—"}</td>
+          <td>${x.agendado.toLocaleString("pt-BR")}</td>
+          <td>${x.recepcionado.toLocaleString("pt-BR")}</td>
+          <td>${x.apac.toLocaleString("pt-BR")}</td>
+          <td>${x.faturado.toLocaleString("pt-BR")}</td>
+          <td style="font-weight:800; color:${x.financeiro>0?'#059669':'#94a3b8'};">${x.financeiro>0?formatBRL(x.financeiro):'—'}</td>
+        </tr>`).join("");
     }
     
     function exportExcel(){
